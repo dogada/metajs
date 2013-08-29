@@ -99,7 +99,12 @@ be finalised syntax for keyword-only function parameters.
 (demo-fn "Just A" "noumenon" c:42)
 ```
 
-MetaJS is under active development. In the nearest plans is to finish javascript source maps support and explicit semantic code transformations. Then add namespaces and integrate support of [Browserify](https://github.com/substack/node-browserify). You can see [full list](http://github.com/dogada/metajs/issues) of planned changes and offer your own.
+MetaJS is under active development. In the nearest plans is to finish javascript
+source maps support and explicit semantic code transformations. Then add
+namespaces and integrate support of
+[Browserify](https://github.com/substack/node-browserify). You can see [full
+list](http://github.com/dogada/metajs/issues) of planned changes and offer your
+own.
 
 
 ### Credits
@@ -127,7 +132,7 @@ T-shirt. It's time to dive into MetaJS:
 ```
 $ metajs -x test/index.mjs # run MetaJS test suite
 $ metajs # start TEPL (Translate Eval Print Loop)
-$ metajs test/index.mjs  # compile single file to stdout
+$ metajs src/cli.mjs  # compile single file to stdout
 $ metajs test/def.mjs test/hook.mjs --output ./ # compile 2 files to the working directory
 $ metajs --help # print help to stdout
 $ make # rebuild MetaJS compiler and run test suite
@@ -135,7 +140,14 @@ $ make # rebuild MetaJS compiler and run test suite
 
 ### How to get involved or learn more
 
-Add any bugs or feature requests to the [issues](http://github.com/dogada/metajs/issues) page. Follow [@meta_js](https://twitter.com/meta_js) or [d0gada](http://www.twitter.com/d0gada) on Twitter to receive latest metajs news. Like [MetaJS page](https://www.facebook.com/pages/Metajs/1389834274578119) on Facebook. Join our [mailing list](https://groups.google.com/d/forum/coect). Please visit [www.coect.net](http://www.coect.net) to find more docs and examples.
+Add any bugs or feature requests to the
+[issues](http://github.com/dogada/metajs/issues) page. Follow
+[@meta_js](https://twitter.com/meta_js) or
+[d0gada](http://www.twitter.com/d0gada) on Twitter to receive latest metajs
+news. Like [MetaJS page](https://www.facebook.com/pages/Metajs/1389834274578119)
+on Facebook. Join our [mailing list](https://groups.google.com/d/forum/coect).
+Please visit [www.coect.net](http://www.coect.net) to find more docs and
+examples.
 
 
 ### MetaJS allows compiler to generate source code. Will a computer create programs instead of a human?

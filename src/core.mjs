@@ -34,10 +34,3 @@
 ;;; root scope for user functions and macroses
 ;;; symbol with same name as in global scope will hide but not delete global definition
 (start-scope "root")
-
-
-
-
-
-
-
