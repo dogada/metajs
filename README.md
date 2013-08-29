@@ -7,7 +7,7 @@ parts of code**.
 ### Logos-oriented programming language
 
 MetaJS is yet another attempt to create better programming language for modern
-world. More about MetaJS background, why it was choosen Lisp-syntax and why it's
+world. More about MetaJS background, why it was chosen Lisp-syntax and why it's
 compiled to Javascript, you can find on
 [coect.net/metajs/](http://www.coect.net/metajs/). Project Coect aims to replace
 outdated Email and XMPP with modern [universal communication
