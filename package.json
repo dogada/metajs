@@ -1,0 +1,30 @@
+{
+  "name": "metajs",
+  "version": "0.0.1",
+  "keywords": [
+    "logos",
+    "lisp",
+    "javascript",
+    "language",
+    "macros"
+  ],
+  "description": "MetaJS: lisp compiled to javascript.",
+  "contributors": {
+    "name": "Dmytro V. Dogadailo",
+    "web": "http://www.coect.net/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/dogada/metajs.git"
+  },
+  "bugs": {
+    "url": "http://github.com/dogada/metajs/issues"
+  },
+  "bin": {
+    "metajs": "./bin/metajs"
+  },
+  "main": "./lib/metajs_node",
+  "dependencies": {
+    "commander": "~2.0.0"
+  }
+}
