@@ -11,10 +11,10 @@ world. More about MetaJS background, why it was chosen Lisp-syntax and why it's
 compiled to Javascript, you can find on
 [coect.net/metajs/](http://www.coect.net/metajs/). Project Coect aims to replace
 outdated Email and XMPP with modern [universal communication
-protocol](http://www.coect.net/). MetaJS for Coect plays the same role as like
-as Emacs Lisp for Emacs.
+protocol](http://www.coect.net/). MetaJS for Coect plays the same role as Emacs
+Lisp for Emacs.
 
-Logos-oriented programming as opposed to object-oriented or functional gives
+Logos-oriented programming as opposed to object-oriented or functional one gives
 main priority to semantic models of the program instead of building blocks of
 the program (objects or functions). Each semantic model (in the form that
 compiler can understand) is called logos.
@@ -86,8 +86,8 @@ To define a macros you can use standard Lisp syntax-quote, unquote and unquote-s
 
 Functions can have optional parameters and parameters with default values. Each
 parameter can be passed positionally or as keyword. In addition function can
-accept variable number of parameters that are accessible as list. Shortly will
-be finalised syntax for keyword-only function parameters.
+accept variable number of parameters that are accessible as list. Shortly syntax
+for keyword-only function parameters will be finalised.
 
 ```lisp
 ;; 'a' is required, 'b' is required and associated with an entity named 'Thing' defined in a logos
@@ -159,4 +159,4 @@ specifically for your program.
 Imagine that you're explaining how does your program work to a grandmother who knows
 nothing about programming &mdash; it's an old grammar compiler. Now imagine that
 you're explaining the same thing to a girl with a degree in computer science &mdash;
-it's a new semantic compiler. But you will have to explain in both cases.
+it's a new semantic compiler. But you will have to explain it in both cases.
