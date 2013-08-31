@@ -1,6 +1,8 @@
-tmp/*
-var/*
-node_modules/*
-other/*
+tmp/
+var/
+etc/
+out/
+node_modules/
+other/
 *.txt
 
