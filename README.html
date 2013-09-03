@@ -1,0 +1,114 @@
+<h1>(: MetaJS)</h1>
+<p>Write on <strong>lisp</strong>. Compile to pure <strong>javascript</strong> without runtime dependencies.
+Enjoy compiler that can <strong>guess your thoughts</strong> and <strong>generate missed
+parts of code</strong>.</p>
+<h3>Logos-oriented programming language</h3>
+<p>MetaJS is yet another attempt to create better programming language for modern
+world. More about MetaJS background, why it was chosen Lisp-syntax and why it&#39;s
+compiled to Javascript, you can find on
+<a href="http://www.coect.net/metajs/">coect.net/metajs/</a>. Project Coect aims to replace
+outdated Email and XMPP with modern <a href="http://www.coect.net/">universal communication
+protocol</a>. MetaJS for Coect plays the same role as Emacs
+Lisp for Emacs.</p>
+<p>Logos-oriented programming as opposed to object-oriented or functional one gives
+main priority to semantic models of the program instead of building blocks of
+the program (objects or functions). Each semantic model (in the form that
+compiler can understand) is called logos.</p>
+<h3>Seamless integration with Javascript</h3>
+<p>MetaJS is compiled to Javascript code without runtime dependencies and don&#39;t use
+own datastructures (like for example ClojureScript does). MetaJS uses native
+Javascript&#39;s arrays as lists and so can perform in any Javascript environment
+without unnecessary overhead. JSON documents are valid MetaJS documents and so
+can be included with usual <code>include</code>. MetaJS tries to generate beautiful
+javascript code that passes JSHint without warnings. The generated code is
+compatible with <a href="http://kangax.github.io/es5-compat-table/">EcmaScript5</a>. For
+legacy browsers like IE8 it should be used
+<a href="https://github.com/kriskowal/es5-shim/">es5-shim</a> or other
+<a href="http://remysharp.com/2010/10/08/what-is-a-polyfill/">polyfill</a>.</p>
+<p>MetaJS is implemented in MetaJS and you can extend language easily by adding new
+macroses. For example, to add support of <code>yield</code> keyword introduced in
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/New_in_JavaScript/1.7">Javascript 1.7</a>
+just create a macro like:</p>
+<pre><code class="lang-lisp">(defmacro yield (x)
+  `(js &quot;yield %&quot; ~x))</code></pre>
+<h3>Feature highlights</h3>
+<p>MetaJS supports destructing across all forms that accept name-value bindings:</p>
+<pre><code class="lang-lisp">(def actors [&quot;Neo&quot; &quot;Trinity&quot; &quot;Morpheus&quot;]
+     [neo trinity morpheus] actors)
+
+(let digits [1 2 3]
+     [one two three] digits
+  (set [one two three] digits))</code></pre>
+<p>Forms can be chained with well-known <code>-&gt;</code> macro. For chaining methods calls often
+used in javascript libraries like <a href="http://jquery.com/">jQuery</a> or
+<a href="http://d3js.org/">D3</a> there is also special syntax based on method hooks. For
+example let&#39;s look at following <a href="http://d3js.org/#transitions">code-sample</a> from
+D3 homepage:</p>
+<pre><code class="lang-javascript">d3.selectAll(&quot;circle&quot;).transition()
+    .duration(750)
+    .delay(function(d, i) { return i * 10; })
+    .attr(&quot;r&quot;, function(d) { return Math.sqrt(d * scale); });</code></pre>
+<p>and rewrite it in MetaJS using hooks and short anonymous functions:</p>
+<pre><code class="lang-lisp">(d3 .selectAll &quot;circle&quot; .transition
+    .duration 750
+    .delay #(* %2 10)
+    .attr &quot;r&quot; #(Math.sqrt (* %1 scale)))</code></pre>
+<p>To define a macros you can use standard Lisp syntax-quote, unquote and unquote-splicing:</p>
+<pre><code class="lang-lisp">(defmacro when (x &amp; code)
+  `(if ~x (do ~@code)))</code></pre>
+<p>Functions can have optional parameters and parameters with default values. Each
+parameter can be passed positionally or as keyword. In addition function can
+accept variable number of parameters that are accessible as list. Shortly syntax
+for keyword-only function parameters will be finalised.</p>
+<pre><code class="lang-lisp">;; &#39;a&#39; is required, &#39;b&#39; is required and associated with an entity named &#39;Thing&#39; defined in a logos
+;; &#39;c&#39; is optional, &#39;d&#39; is optional and has default value 2, &#39;more&#39; holds rest positional parameters
+(defn demo-fn (a b:Thing c:? d:2 &amp; more)
+ (log a b c d more))
+
+;; an example of the function call
+(demo-fn &quot;Just A&quot; &quot;noumenon&quot; c:42)</code></pre>
+<p>MetaJS is under active development. In the nearest plans is to finish javascript
+source maps support and explicit semantic code transformations. Then add
+namespaces and integrate support of
+<a href="https://github.com/substack/node-browserify">Browserify</a>. You can see <a href="http://github.com/dogada/metajs/issues">full
+list</a> of planned changes and offer your
+own.</p>
+<h3>Credits</h3>
+<ul>
+<li>I learned a lot about Lisp from <a href="http://www.paulgraham.com/lisp.html">Paul
+Graham&#39;s articles</a>.</li>
+<li>I used syntax of <a href="http://www.clojure.org/">Clojure</a> as starting point for MetaJS syntax.</li>
+<li>Some ideas about implementing Lisp on top of Javascript are borrowed from <a href="https://github.com/clojure/clojurescript">ClojureScript</a>,
+<a href="https://github.com/jbr/sibilant">Sibilant</a> and <a href="https://github.com/santoshrajan/lispyscript">LispyScript</a>.</li>
+</ul>
+<h3>How to install and try MetaJS</h3>
+<p>Firstly, please install <a href="http://nodejs.org/download/">Node.js</a>, then:</p>
+<pre><code class="lang-sh">$ git clone git://github.com/dogada/metajs.git
+$ cd ./metajs
+$ npm install
+$ npm link .</code></pre>
+<p>You have just installed MetaJS and become qualified for a MetaJS-developer
+T-shirt. It&#39;s time to dive into MetaJS:</p>
+<pre><code>$ metajs -x test/index.mjs # run MetaJS test suite
+$ metajs # start TEPL (Translate Eval Print Loop)
+$ metajs src/cli.mjs  # compile single file to stdout
+$ metajs test/def.mjs test/hook.mjs --output ./ # compile 2 files to the working directory
+$ metajs --help # print help to stdout
+$ make # rebuild MetaJS compiler and run test suite</code></pre>
+<h3>How to get involved or learn more</h3>
+<p>Add any bugs or feature requests to the
+<a href="http://github.com/dogada/metajs/issues">issues</a> page. Follow
+<a href="https://twitter.com/meta_js">@meta_js</a> or
+<a href="http://www.twitter.com/d0gada">d0gada</a> on Twitter to receive latest metajs
+news. Like <a href="https://www.facebook.com/pages/Metajs/1389834274578119">MetaJS page</a>
+on Facebook. Join our <a href="https://groups.google.com/d/forum/coect">mailing list</a>.
+Please visit <a href="http://www.coect.net">www.coect.net</a> to find more docs and
+examples.</p>
+<h3>MetaJS allows compiler to generate source code. Will a computer create programs instead of a human?</h3>
+<p>The compiler will execute the instructions exactly as before, but in addition to
+grammar instructions, it will also execute semantic instructions defined
+specifically for your program.</p>
+<p>Imagine that you&#39;re explaining how does your program work to a grandmother who knows
+nothing about programming &mdash; it&#39;s an old grammar compiler. Now imagine that
+you&#39;re explaining the same thing to a girl with a degree in computer science &mdash;
+it&#39;s a new semantic compiler. But you will have to explain it in both cases.</p>

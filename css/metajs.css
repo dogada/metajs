@@ -1,0 +1,116 @@
+/* Your styles go here */
+
+/* Space out content a bit */
+body {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* Everything but the jumbotron gets side spacing for mobile-first views */
+.header,
+.content,
+.footer {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Custom page header */
+.header {
+  border-bottom: 1px solid #e5e5e5;
+}
+/* Make the masthead heading the same height as the navigation */
+.header h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 40px;
+  padding-bottom: 19px;
+}
+
+.footer {
+  padding-top: 19px;
+  color: #777;
+  border-top: 1px solid #e5e5e5;
+}
+
+.jumbotron {
+  text-align: center;
+  border-bottom: 1px solid #e5e5e5;
+  background-color: #0060f0;
+  color: #ffffff;
+}
+
+.nav-pills>li.active>a, .nav-pills>li.active>a:hover, .nav-pills>li.active>a:focus {
+    color: #fff;
+    background-color: #0060f0;
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary.active, .btn-primary.disabled, .btn-primary[disabled] {
+    background-color: #0060f0;
+    color: #fff;
+}
+
+#home .jumbotron h1 {
+    display: inline;
+    vertical-align: middle;
+    margin: 10px 0;
+}
+
+#home .jumbotron img {
+    display: inline;
+}
+
+#metajs .jumbotron {
+    background-color: #30a000;
+}
+
+.jumbotron .btn {
+  font-size: 21px;
+  padding: 14px 24px;
+}
+
+@media screen and (max-width: 768px) {
+    .logo {
+        width: 64px;
+        height: 64px;
+    }
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+  /* Remove the padding we set earlier */
+  .header,
+  .marketing,
+  .footer {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  /* Space out the masthead */
+  .header {
+    margin-bottom: 30px;
+  }
+  /* Remove the bottom border on the jumbotron for visual effect */
+  .jumbotron {
+    border-bottom: 0;
+  }
+}
+
+.addthis_toolbox {
+    padding-bottom: 15px;
+}
+
+.jumbotron h1 {
+    letter-spacing: 2px;
+}
+
+.sample textarea, .sample pre {
+    width: 100%;
+    height: 10em;
+    font-size: 1em;
+    padding: 5px;
+    overflow: auto;
+    resize: false;
+}
+
+#tepl textarea, #tepl pre {
+    height: 600px;
+}

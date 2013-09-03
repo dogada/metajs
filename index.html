@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dmytro V. Dogadailo">
+
+    <title>MetaJS overview | metajs.coect.net</title>
+
+    <meta name="description" content="Lisp compiled to Javascript" />
+    <meta name="keywords" content="metajs, javascript, lisp" />
+    <meta name="generator" content="DocPad v6.51.6" />
+    <meta property="og:title" content="MetaJS overview | metajs.coect.net" />
+    <meta property="og:image" content="http://www.coect.net/img/logo_128.png" />
+    <meta property="og:type" content="article" />
+    
+    
+    <meta property="og:url" content="http://www.coect.net/index.html" />
+    <link rel="canonical" href="http://www.coect.net/index.html" />
+    
+
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="me" href="http://twitter.com/meta_js">
+    <!--link rel="stylesheet"
+    href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"-->
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/metajs.css" />
+
+    <script src="/js/jquery-min.js"></script>
+    <script src="/js/metajs_browser.js"></script>
+    <script src="/js/metajs_docs.js"></script>
+    <!-- async ga.js tracking  -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-43028517-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' :
+      'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body id="overview">
+
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills">
+          <li class="active">
+	    <a href="/">Overview</a>
+	  </li>
+          <li class="">
+	    <a href="/tepl/">TEPL</a>
+	  </li>
+          <li class="">
+	    <a href="/faq/">FAQ</a>
+	  </li>
+          <li>
+	    <a href="http://www.coect.net/">Coect.net</a>
+	  </li>
+        </ul>
+      </div>
+
+      <div class="row">
+	
+        <div class="col-md-2">
+	  
+	  <ul class="nav">
+  <li><a href="#introduction">Introduction</a></li>
+  <li><a href="#destructing">Destructing</a></li>
+  <li><a href="#method-and-property-hooks">Hooks</a></li>
+  <li><a href="#macroses">Macroses</a></li>
+  <li><a href="#macroses">Functions</a></li>
+  <li><a href="#try-more">More</a></li>
+</ul>
+	  
+        </div>
+
+        <div class="col-md-10 content">
+	  <h4>Introduction</h4>
+<p>MetaJS is Lisp compiled to Javascript. Final code runs in browser or on NodeJs
+plaform without runtime dependencies. More about MetaJS background you can find
+on <a href="http://www.coect.net/metajs/">coect.net/metajs/</a>. Project Coect aims to
+replace outdated Email and XMPP with modern <a href="http://www.coect.net/">universal communication
+protocol</a>. MetaJS for Coect plays the same role as Emacs
+Lisp for Emacs.</p>
+<p>Bellow is an interactive overview of MetaJS language. You can change MetaJS
+code as you read docs and imediatelly see generated javascript code.</p>
+<h4>Destructing</h4>
+<p>MetaJS supports destructing in <code>def</code>, <code>get</code>, <code>set</code> forms:</p>
+<pre><code class="lang-lisp">(def actors [&quot;Neo&quot; &quot;Trinity&quot; &quot;Morpheus&quot;]
+     [neo trinity morpheus] actors)
+
+(let digits [1 2 3]
+     [one two three] digits
+  (set [one two three] digits))</code></pre>
+<h4>Method and property hooks</h4>
+<p>For chaining methods calls and object property access there is also method and
+property hooks. Literal begining with <code>.</code> is treated as method of the previous
+form, next forms are parameters of the method. Literal begining with <code>@</code> is
+property of previous form, for example <code>(get obj &#39;prop)</code> can be written as <code>(obj
+@prop)</code>. Hooks are espesially useful when they are combined:</p>
+<pre><code class="lang-lisp">(d3 .selectAll &quot;circle&quot; .transition
+    .duration 750
+    .delay #(* %2 10)
+    .attr &quot;r&quot; #(Math.sqrt (* %1 scale)))</code></pre>
+<h4>Macroses</h4>
+<p>To define a macros you can use standard Lisp syntax-quote, unquote and unquote-splicing:</p>
+<pre><code class="lang-lisp">(defmacro when (x &amp; code)
+  `(if ~x (do ~@code)))
+
+(when earth-moves (log &quot;And yet it moves!&quot;))</code></pre>
+<h4>Functions</h4>
+<p>Functions can have optional parameters and parameters with default values. Each
+parameter can be passed positionally or as keyword. In addition function can
+accept variable number of parameters that are accessible as list.</p>
+<pre><code class="lang-lisp">(defn demo-fn (a b:Thing c:? d:2 &amp; more)
+ (log a b c d more))
+
+;; an example of the function call
+(demo-fn &quot;Just A&quot; &quot;noumenon&quot; c:42)</code></pre>
+<h4>Try more</h4>
+<p>For experiments with bigger code parts you can use <a href="/tepl/">Translate Eval
+Print Loop (TEPL)</a> or <a href="https://github.com/dogada/metajs#how-to-install-and-try-metajs">install
+MetaJS</a> locally.</p>
+
+        </div>
+	
+      </div>
+
+      <div class="footer">
+	<p>Follow us on Twitter <a href="https://twitter.com/coect_net">@meta_js</a> or like
+<a href="https://www.facebook.com/pages/Metajs/1389834274578119">MetaJS</a> on Facebook.
+Watch <a href="https://github.com/dogada/metajs">source code repository</a> and report
+<a href="http://github.com/dogada/metajs/issues">issues</a> on GitHub. Top MetaJS news you
+can find also at <a href="https://twitter.com/d0gada">@d0gada</a>.</p>
+<p>&copy; Dmytro V. Dogadailo 2013</p>
+
+      </div>
+
+    </div>
+
+  </body>
+</html>
+
