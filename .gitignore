@@ -1,0 +1,9 @@
+tmp/
+var/
+etc/
+out/
+node_modules/
+other/
+doc/
+*.txt
+
