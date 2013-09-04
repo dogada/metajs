@@ -79,7 +79,8 @@
   <li><a href="#destructing">Destructing</a></li>
   <li><a href="#method-and-property-hooks">Hooks</a></li>
   <li><a href="#macroses">Macroses</a></li>
-  <li><a href="#macroses">Functions</a></li>
+  <li><a href="#functions">Functions</a></li>
+  <li><a href="#smart-compilation">Smart compilation</a></li>
   <li><a href="#try-more">More</a></li>
 </ul>
 	  
@@ -128,6 +129,17 @@ accept variable number of parameters that are accessible as list.</p>
 
 ;; an example of the function call
 (demo-fn &quot;Just A&quot; &quot;noumenon&quot; c:42)</code></pre>
+<h4>Smart compilation</h4>
+<p>MetaJS tries to generate optimized Javascript code. Same MetaJS code can be
+compiled to several forms of Javascript code. For example, let&#39;s look at the
+classical conditional form <code>if</code> in different contexts.</p>
+<pre><code class="lang-lisp">(defn if-return (a b)
+  (if a b))</code></pre>
+<pre><code class="lang-lisp">(defn if-statement (a b)
+  (if a (set b a))
+  b)</code></pre>
+<pre><code class="lang-lisp">(defn if-expression (a b)
+  (log (if a a b)))</code></pre>
 <h4>Try more</h4>
 <p>For experiments with bigger code parts you can use <a href="/tepl/">Translate Eval
 Print Loop (TEPL)</a> or <a href="https://github.com/dogada/metajs#how-to-install-and-try-metajs">install
@@ -148,6 +160,15 @@ can find also at <a href="https://twitter.com/d0gada">@d0gada</a>.</p>
       </div>
 
     </div>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-43028517-1', 'coect.net');
+  ga('send', 'pageview');
+</script>
 
   </body>
 </html>
