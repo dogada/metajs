@@ -21,7 +21,7 @@
   })());
 });")
 
-(assert-js "(defn stmt-when (a) (when a (set a b)) a)" "var stmtWhen = (function(a) {
+(assert-js "(defn stmt-when (a b) (when a (set a b)) a)" "var stmtWhen = (function(a, b) {
   if (a) {
     a = b;
   }

@@ -9,6 +9,7 @@
     "macros"
   ],
   "description": "MetaJS: lisp compiled to javascript.",
+  "license" : "MIT",
   "contributors": {
     "name": "Dmytro V. Dogadailo",
     "web": "http://www.coect.net/"

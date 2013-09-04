@@ -11,8 +11,12 @@ world. More about MetaJS background, why it was chosen Lisp-syntax and why it's
 compiled to Javascript, you can find on
 [coect.net/metajs/](http://www.coect.net/metajs/). Project Coect aims to replace
 outdated Email and XMPP with modern [universal communication
-protocol](http://www.coect.net/). MetaJS for Coect plays the same role as Emacs
-Lisp for Emacs.
+protocol](http://www.coect.net/).
+
+MetaJS for Coect plays the same role as Emacs Lisp for Emacs. MetaJS is written
+in MetaJS and can recompile itself. Look at the [interactive
+MetaJS-documentation](http://metajs.coect.net/) where you can try MetaJS without
+leaving your browser.
 
 Logos-oriented programming as opposed to object-oriented or functional one gives
 main priority to semantic models of the program instead of building blocks of

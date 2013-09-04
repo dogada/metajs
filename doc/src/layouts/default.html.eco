@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Dmytro V. Dogadailo">
+
+    <title><%= @getPreparedTitle() %></title>
+
+    <meta name="description" content="<%= @getPreparedDescription() %>" />
+    <meta name="keywords" content="<%= @getPreparedKeywords() %>" />
+    <%- @getBlock('meta').toHTML() %>
+    <meta property="og:title" content="<%= @getPreparedTitle() %>" />
+    <meta property="og:image" content="http://www.coect.net/img/logo_128.png" />
+    <meta property="og:type" content="article" />
+    <% if @document.description: %>
+    <meta property="og:description" content="<%= @document.description %>" />
+    <% end %>
+    <% if @document.url: %>
+    <meta property="og:url" content="http://www.coect.net<%= @document.url %>" />
+    <link rel="canonical" href="http://www.coect.net<%= @document.url %>" />
+    <% end %>
+
+    <link rel="shortcut icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="me" href="http://twitter.com/meta_js">
+    <!--link rel="stylesheet"
+    href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"-->
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/metajs.css" />
+
+    <script src="/js/jquery-min.js"></script>
+    <script src="/js/metajs_browser.js"></script>
+    <script src="/js/metajs_docs.js"></script>
+    <!-- async ga.js tracking  -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-43028517-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript';
+      ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' :
+      'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0];
+      s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+  </head>
+
+  <body id="<%= @document.slug %>">
+
+    <div class="container">
+      <div class="header">
+        <ul class="nav nav-pills">
+          <li class="<%= "active" if @document.slug == 'overview'%>">
+	    <a href="/">Overview</a>
+	  </li>
+          <li class="<%= "active" if @document.slug == 'tepl' %>">
+	    <a href="/tepl/">TEPL</a>
+	  </li>
+          <li class="<%= "active" if @document.slug == 'faq' %>">
+	    <a href="/faq/">FAQ</a>
+	  </li>
+          <li>
+	    <a href="http://www.coect.net/">Coect.net</a>
+	  </li>
+        </ul>
+      </div>
+
+      <div class="row">
+	<% if @document.slug == 'tepl': %>
+        <div class="content">
+	  <%- @content %>
+        </div>
+
+	<% else: %>
+        <div class="col-md-2">
+	  <% if @document.slug == 'overview': %>
+	  <%- @partial('overview_nav.html.md') %>
+	  <% end %>
+        </div>
+
+        <div class="col-md-10 content">
+	  <%- @content %>
+        </div>
+	<% end %>
+      </div>
+
+      <div class="footer">
+	<%- @partial('footer.html.md') %>
+      </div>
+
+    </div>
+    <%- @partial('google_analytics.html') %>
+  </body>
+</html>
+
