@@ -9,5 +9,6 @@ cacheable: true
   <li>[Macroses](#macroses)</li>
   <li>[Functions](#functions)</li>
   <li>[Smart compilation](#smart-compilation)</li>
+  <li>[Magic](#magic)</li>
   <li>[More](#try-more)</li>
 </ul>

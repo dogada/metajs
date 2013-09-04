@@ -94,6 +94,24 @@ classical conditional form `if` in different contexts.
   (log (if a a b)))
 ```
 
+#### Magic
+
+It's not a joke  that MetaJS compiler can guess your thoughts and generate
+missed parts of code. Let's look at example bellow where function `named-id`
+requires 2 parameters but it's called without any parameters. Notice that in the
+compiled Javascript code on the right function `namedFn` called with both two
+required parameters obtained from local context. How is it done?  It's
+[magic](http://www.coect.net/metajs/).
+
+```
+(defn named-id (id name)
+  (log id ":" name))
+
+(defn logos-demo (id)
+  (let name (str "Name of " id)
+    (named-id)))
+```
+
 #### Try more
 
 For experiments with bigger code parts you can use [Translate Eval
