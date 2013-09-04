@@ -29,7 +29,7 @@ legacy browsers like IE8 it should be used
 <a href="https://github.com/kriskowal/es5-shim/">es5-shim</a> or other
 <a href="http://remysharp.com/2010/10/08/what-is-a-polyfill/">polyfill</a>.</p>
 <p>MetaJS is implemented in MetaJS and you can extend language easily by adding new
-macroses. For example, to add support of <code>yield</code> keyword introduced in
+macros. For example, to add support of <code>yield</code> keyword introduced in
 <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/New_in_JavaScript/1.7">Javascript 1.7</a>
 just create a macro like:</p>
 <pre><code class="lang-lisp">(defmacro yield (x)
@@ -56,7 +56,7 @@ D3 homepage:</p>
     .duration 750
     .delay #(* %2 10)
     .attr &quot;r&quot; #(Math.sqrt (* %1 scale)))</code></pre>
-<p>To define a macros you can use standard Lisp syntax-quote, unquote and unquote-splicing:</p>
+<p>To define a macro you can use standard Lisp syntax-quote, unquote and unquote-splicing:</p>
 <pre><code class="lang-lisp">(defmacro when (x &amp; code)
   `(if ~x (do ~@code)))</code></pre>
 <p>Functions can have optional parameters and parameters with default values. Each

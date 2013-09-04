@@ -78,7 +78,7 @@
   <li><a href="#introduction">Introduction</a></li>
   <li><a href="#destructing">Destructing</a></li>
   <li><a href="#method-and-property-hooks">Hooks</a></li>
-  <li><a href="#macroses">Macroses</a></li>
+  <li><a href="#macros">Macros</a></li>
   <li><a href="#functions">Functions</a></li>
   <li><a href="#smart-compilation">Smart compilation</a></li>
   <li><a href="#magic">Magic</a></li>
@@ -115,8 +115,8 @@ property of previous form, for example <code>(get obj &#39;prop)</code> can be w
     .duration 750
     .delay #(* %2 10)
     .attr &quot;r&quot; #(Math.sqrt (* %1 scale)))</code></pre>
-<h4>Macroses</h4>
-<p>To define a macros you can use standard Lisp syntax-quote, unquote and unquote-splicing:</p>
+<h4>Macros</h4>
+<p>To define a macro you can use standard Lisp syntax-quote, unquote and unquote-splicing:</p>
 <pre><code class="lang-lisp">(defmacro when (x &amp; code)
   `(if ~x (do ~@code)))
 
