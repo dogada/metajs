@@ -4,7 +4,7 @@ cacheable: true
 
 <ul class="nav">
   <li>[Introduction](#introduction)</li>
-  <li>[Destructing](#destructing)</li>
+  <li>[Destructuring](#destructuring)</li>
   <li>[Hooks](#method-and-property-hooks)</li>
   <li>[Macros](#macros)</li>
   <li>[Functions](#functions)</li>

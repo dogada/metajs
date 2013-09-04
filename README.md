@@ -48,7 +48,7 @@ just create a macro like:
 
 ### Feature highlights
 
-MetaJS supports destructing across all forms that accept name-value bindings:
+MetaJS supports destructuring across all forms that accept name-value bindings:
 
 ```lisp
 (def actors ["Neo" "Trinity" "Morpheus"]

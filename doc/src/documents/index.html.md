@@ -17,9 +17,9 @@ Bellow is an interactive overview of MetaJS language. You can change MetaJS
 code as you read docs and imediatelly see generated javascript code.
 
 
-#### Destructing
+#### Destructuring
 
-MetaJS supports destructing in `def`, `get`, `set` forms:
+MetaJS supports destructuring in `def`, `get`, `set` forms:
 
 ```lisp
 (def actors ["Neo" "Trinity" "Morpheus"]
