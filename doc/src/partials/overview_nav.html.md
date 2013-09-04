@@ -6,7 +6,7 @@ cacheable: true
   <li>[Introduction](#introduction)</li>
   <li>[Destructing](#destructing)</li>
   <li>[Hooks](#method-and-property-hooks)</li>
-  <li>[Macroses](#macroses)</li>
+  <li>[Macros](#macros)</li>
   <li>[Functions](#functions)</li>
   <li>[Smart compilation](#smart-compilation)</li>
   <li>[Magic](#magic)</li>

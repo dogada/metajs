@@ -46,9 +46,9 @@ property of previous form, for example `(get obj 'prop)` can be written as `(obj
     .attr "r" #(Math.sqrt (* %1 scale)))
 ```
 
-#### Macroses
+#### Macros
 
-To define a macros you can use standard Lisp syntax-quote, unquote and unquote-splicing:
+To define a macro you can use standard Lisp syntax-quote, unquote and unquote-splicing:
 
 ```lisp
 (defmacro when (x & code)

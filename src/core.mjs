@@ -10,7 +10,7 @@
         'error error)
 
 (include "./scope")
-;;; global scope for common macroses like def, defn, etc
+;;; global scope for common macros like def, defn, etc
 (start-scope "global")
 
 (include "./runtime")
@@ -31,6 +31,6 @@
 (include "./misc")
 (include "./debug")
 
-;;; root scope for user functions and macroses
+;;; root scope for user functions and macros
 ;;; symbol with same name as in global scope will hide but not delete global definition
 (start-scope "root")

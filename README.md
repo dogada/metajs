@@ -37,7 +37,7 @@ legacy browsers like IE8 it should be used
 [polyfill](http://remysharp.com/2010/10/08/what-is-a-polyfill/).
 
 MetaJS is implemented in MetaJS and you can extend language easily by adding new
-macroses. For example, to add support of `yield` keyword introduced in
+macros. For example, to add support of `yield` keyword introduced in
 [Javascript 1.7](https://developer.mozilla.org/en-US/docs/Web/JavaScript/New_in_JavaScript/1.7)
 just create a macro like:
 
@@ -81,7 +81,7 @@ and rewrite it in MetaJS using hooks and short anonymous functions:
     .attr "r" #(Math.sqrt (* %1 scale)))
 ```
 
-To define a macros you can use standard Lisp syntax-quote, unquote and unquote-splicing:
+To define a macro you can use standard Lisp syntax-quote, unquote and unquote-splicing:
 
 ```lisp
 (defmacro when (x & code)
