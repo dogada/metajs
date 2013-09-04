@@ -81,6 +81,7 @@
   <li><a href="#macroses">Macroses</a></li>
   <li><a href="#functions">Functions</a></li>
   <li><a href="#smart-compilation">Smart compilation</a></li>
+  <li><a href="#magic">Magic</a></li>
   <li><a href="#try-more">More</a></li>
 </ul>
 	  
@@ -140,6 +141,19 @@ classical conditional form <code>if</code> in different contexts.</p>
   b)</code></pre>
 <pre><code class="lang-lisp">(defn if-expression (a b)
   (log (if a a b)))</code></pre>
+<h4>Magic</h4>
+<p>It&#39;s not a joke  that MetaJS compiler can guess your thoughts and generate
+missed parts of code. Let&#39;s look at example bellow where function <code>named-id</code>
+requires 2 parameters but it&#39;s called without any parameters. Notice that in the
+compiled Javascript code on the right function <code>namedFn</code> called with both two
+required parameters obtained from local context. How is it done?  It&#39;s
+<a href="http://www.coect.net/metajs/">magic</a>.</p>
+<pre><code>(defn named-id (id name)
+  (log id &quot;:&quot; name))
+
+(defn logos-demo (id)
+  (let name (str &quot;Name of &quot; id)
+    (named-id)))</code></pre>
 <h4>Try more</h4>
 <p>For experiments with bigger code parts you can use <a href="/tepl/">Translate Eval
 Print Loop (TEPL)</a> or <a href="https://github.com/dogada/metajs#how-to-install-and-try-metajs">install
