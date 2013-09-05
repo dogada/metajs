@@ -7,18 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="Dmytro V. Dogadailo">
 
-    <title>MetaJS overview | metajs.coect.net</title>
+    <title>MetaJS is a Lisp that can guess your thoughts and generate missed code | metajs.coect.net</title>
 
     <meta name="description" content="Lisp compiled to Javascript" />
     <meta name="keywords" content="metajs, javascript, lisp" />
     <meta name="generator" content="DocPad v6.51.6" />
-    <meta property="og:title" content="MetaJS overview | metajs.coect.net" />
+    <meta property="og:title" content="MetaJS is a Lisp that can guess your thoughts and generate missed code | metajs.coect.net" />
     <meta property="og:image" content="http://www.coect.net/img/logo_128.png" />
     <meta property="og:type" content="article" />
-    
-    
-    <meta property="og:url" content="http://www.coect.net/index.html" />
-    <link rel="canonical" href="http://www.coect.net/index.html" />
     
 
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -51,6 +47,11 @@
   </head>
 
   <body id="overview">
+    <a href="https://github.com/dogada/metajs">
+      <img style="position: absolute; top: 0; right: 0; border: 0;"
+	   src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png"
+	   alt="Fork me on GitHub">
+    </a>
 
     <div class="container">
       <div class="header">
@@ -74,7 +75,7 @@
 	
         <div class="col-md-2">
 	  
-	  <ul class="nav">
+	  <ul class="nav overview-toc">
   <li><a href="#introduction">Introduction</a></li>
   <li><a href="#destructuring">Destructuring</a></li>
   <li><a href="#method-and-property-hooks">Hooks</a></li>
@@ -84,6 +85,14 @@
   <li><a href="#magic">Magic</a></li>
   <li><a href="#try-more">More</a></li>
 </ul>
+
+
+<p><a href="https://twitter.com/share" class="twitter-share-button"
+   data-via="meta_js" data-size="large"
+   data-related="coect_net:Retire your Email!,d0gada:creator of MetaJS"
+   data-hashtags="MetaJS">Tweet</a></p>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document,
+  'script', 'twitter-wjs');</script>
 	  
         </div>
 
@@ -141,7 +150,8 @@ classical conditional form <code>if</code> in different contexts.</p>
   b)</code></pre>
 <pre><code class="lang-lisp">(defn if-expression (a b)
   (log (if a a b)))</code></pre>
-<h4>Magic</h4>
+<h4 id="magic">Magic</h4>
+
 <p>It&#39;s not a joke  that MetaJS compiler can guess your thoughts and generate
 missed parts of code. Let&#39;s look at example bellow where function <code>named-id</code>
 requires 2 parameters but it&#39;s called without any parameters. Notice that in the
