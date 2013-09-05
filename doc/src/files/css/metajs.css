@@ -114,3 +114,7 @@ body {
 #tepl textarea, #tepl pre {
     height: 600px;
 }
+
+.overview-toc {
+    margin-bottom: 20px;
+}

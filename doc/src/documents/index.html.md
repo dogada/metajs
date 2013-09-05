@@ -1,7 +1,7 @@
 ---
 layout: 'default'
 slug: 'overview'
-title: 'MetaJS overview'
+title: 'MetaJS is a Lisp that can guess your thoughts and generate missed code'
 ---
 
 #### Introduction
@@ -94,7 +94,7 @@ classical conditional form `if` in different contexts.
   (log (if a a b)))
 ```
 
-#### Magic
+<h4 id="magic">Magic</h4>
 
 It's not a joke  that MetaJS compiler can guess your thoughts and generate
 missed parts of code. Let's look at example bellow where function `named-id`
