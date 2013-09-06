@@ -104,13 +104,24 @@ required parameters obtained from local context. How is it done?  It's
 [magic](http://www.coect.net/metajs/).
 
 ```
-(defn named-id (id name)
-  (log id ":" name))
+(defn named-id (id name opt:"")
+  (str id ":" name ":" opt))
 
 (defn logos-demo (id)
-  (let name (str "Name of " id)
+  (let name "A name" opt 42
     (named-id)))
 ```
+
+MetaJS will do what you mean **only** if you didn't say what to do. Compiler will
+never attempt to be smarter than you. MetaJS will try to resolve only required
+function parameters, i.e. do what you said it to do. It will not try to find
+optional parameters in the execution context.
+
+In the above example local variable `opt` from `logos-demo` function isn't passed to
+`named-id` function, because `opt` argument declared as *optional* for
+`named-id` function (and has default value &mdash; empty string). If you missed a required
+variable and MetaJS can't find it in the call context or there more than one
+possible solution, you should see a warning.
 
 #### Try more
 
