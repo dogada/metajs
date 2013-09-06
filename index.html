@@ -158,12 +158,21 @@ requires 2 parameters but it&#39;s called without any parameters. Notice that in
 compiled Javascript code on the right function <code>namedId</code> called with both two
 required parameters obtained from local context. How is it done?  It&#39;s
 <a href="http://www.coect.net/metajs/">magic</a>.</p>
-<pre><code>(defn named-id (id name)
-  (log id &quot;:&quot; name))
+<pre><code>(defn named-id (id name opt:&quot;&quot;)
+  (str id &quot;:&quot; name &quot;:&quot; opt))
 
 (defn logos-demo (id)
-  (let name (str &quot;Name of &quot; id)
+  (let name &quot;A name&quot; opt 42
     (named-id)))</code></pre>
+<p>MetaJS will do what you mean <strong>only</strong> if you didn&#39;t say what to do. Compiler will
+never attempt to be smarter than you. MetaJS will try to resolve only required
+function parameters, i.e. do what you said it to do. It will not try to find
+optional parameters in the execution context.</p>
+<p>In the above example local variable <code>opt</code> from <code>logos-demo</code> function isn&#39;t passed to
+<code>named-id</code> function, because <code>opt</code> argument declared as <em>optional</em> for
+<code>named-id</code> function (and has default value &mdash; empty string). If you missed a required
+variable and MetaJS can&#39;t find it in the call context or there more than one
+possible solution, you should see a warning.</p>
 <h4>Try more</h4>
 <p>For experiments with bigger code parts you can use <a href="/tepl/">Translate Eval
 Print Loop (TEPL)</a> or <a href="https://github.com/dogada/metajs#how-to-install-and-try-metajs">install
