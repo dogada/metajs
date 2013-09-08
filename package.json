@@ -1,14 +1,17 @@
 {
   "name": "metajs",
+  "homepage": "http://metajs.coect.net",
   "version": "0.0.1",
   "keywords": [
     "logos",
     "lisp",
     "javascript",
     "language",
-    "macros"
+    "macros",
+    "compiler",
+    "magic"
   ],
-  "description": "MetaJS: lisp compiled to javascript.",
+  "description": "Write on Lisp. Compile to Javascript. Can guess thoughts and generate missed code.",
   "license" : "MIT",
   "contributors": {
     "name": "Dmytro V. Dogadailo",

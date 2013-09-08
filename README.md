@@ -121,13 +121,21 @@ Graham's articles](http://www.paulgraham.com/lisp.html).
 
 ### How to install and try MetaJS
 
-Firstly, please install [Node.js](http://nodejs.org/download/), then:
+Firstly, please install [Node.js](http://nodejs.org/download/).
+
+If you want  to install latest development version of MetaJS:
 
 ```sh
-$ git clone git://github.com/dogada/metajs.git
+$ git clone https://github.com/dogada/metajs.git
 $ cd ./metajs
 $ npm install
 $ npm link .
+```
+
+If you don't plan to rebuild MetaJS and just want to try it:
+
+```sh
+$ npm install -g metajs
 ```
 
 You have just installed MetaJS and become qualified for a MetaJS-developer
@@ -138,6 +146,7 @@ $ metajs -x test/index.mjs # run MetaJS test suite
 $ metajs # start TEPL (Translate Eval Print Loop)
 $ metajs src/cli.mjs  # compile single file to stdout
 $ metajs test/def.mjs test/hook.mjs --output ./ # compile 2 files to the working directory
+$ metajs -e "(+ 2 2)" # advanced calculator
 $ metajs --help # print help to stdout
 $ make # rebuild MetaJS compiler and run test suite
 ```
