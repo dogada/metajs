@@ -85,17 +85,21 @@ Graham&#39;s articles</a>.</li>
 <a href="https://github.com/jbr/sibilant">Sibilant</a> and <a href="https://github.com/santoshrajan/lispyscript">LispyScript</a>.</li>
 </ul>
 <h3>How to install and try MetaJS</h3>
-<p>Firstly, please install <a href="http://nodejs.org/download/">Node.js</a>, then:</p>
-<pre><code class="lang-sh">$ git clone git://github.com/dogada/metajs.git
+<p>Firstly, please install <a href="http://nodejs.org/download/">Node.js</a>.</p>
+<p>If you want  to install latest development version of MetaJS:</p>
+<pre><code class="lang-sh">$ git clone https://github.com/dogada/metajs.git
 $ cd ./metajs
 $ npm install
 $ npm link .</code></pre>
+<p>If you don&#39;t plan to rebuild MetaJS and just want to try it:</p>
+<pre><code class="lang-sh">$ npm install -g metajs</code></pre>
 <p>You have just installed MetaJS and become qualified for a MetaJS-developer
 T-shirt. It&#39;s time to dive into MetaJS:</p>
 <pre><code>$ metajs -x test/index.mjs # run MetaJS test suite
 $ metajs # start TEPL (Translate Eval Print Loop)
 $ metajs src/cli.mjs  # compile single file to stdout
 $ metajs test/def.mjs test/hook.mjs --output ./ # compile 2 files to the working directory
+$ metajs -e &quot;(+ 2 2)&quot; # advanced calculator
 $ metajs --help # print help to stdout
 $ make # rebuild MetaJS compiler and run test suite</code></pre>
 <h3>How to get involved or learn more</h3>

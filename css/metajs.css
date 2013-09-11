@@ -115,6 +115,7 @@ body {
     height: 600px;
 }
 
-.overview-toc {
+.overview-toc, .twitter-share-button {
     margin-bottom: 20px;
 }
+
