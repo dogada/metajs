@@ -3,31 +3,32 @@
 
 (defn required-arg-fn (a)
   a)
-(assert-eq (required-arg-fn) undefined)
 (assert-eq (required-arg-fn 1) 1)
+(assert-eq (required-arg-fn 1 2) 1)
 
 (defn required-args-fn (a b)
   [a b])
 (assert-eq* (required-args-fn 1 2) [1 2])
-(assert-eq* (required-args-fn 3) [3 undefined])
+(assert-eq* (required-args-fn 2 b:3) [2 3])
 
-(defn required-optional-args-fn (a b c)
+(defn required-optional-args-fn (a b c:?)
   [a b c])
-(assert-eq* (required-optional-args-fn 4 "five" 6) [4 "five" 6])
-(assert-eq* (required-optional-args-fn true false) [true false undefined])
+(assert-eq* (required-optional-args-fn 4 "five") [4 "five" undefined])
+(assert-eq* (required-optional-args-fn true false c: "C") [true false "C"])
 
-(defn required-optional-args-fn2 (a b c d)
+(defn required-optional-args-fn2 (a b c:? d:?)
   [a b c d])
-(assert-eq* [4 "five" 7 undefined] (required-optional-args-fn2 4 "five" 7))
-(assert-eq* [true false null undefined] (required-optional-args-fn2 true false null))
-(assert-eq* [8 "nine" undefined undefined] (required-optional-args-fn2 8 'nine))
+(assert-eq* (required-optional-args-fn2 4 "five") [4 "five"])
+(assert-eq* (required-optional-args-fn2 true false null undefined) [true false null])
+(assert-eq* (required-optional-args-fn2 8 'nine c:10 d:11) [8 "nine" 10 11])
+(assert-eq* (required-optional-args-fn2 8 'nine 10 11) [8 "nine" 10 11])
 
 (defn full-fn (a b c:? d:? & more)
   [a b c d more])
 
-(assert-eq* (full-fn 1) [1 undefined undefined undefined []])
-(assert-eq* (full-fn a:2) [2 undefined undefined undefined []])
-(assert-eq* (full-fn b:17) [undefined 17 undefined undefined []])
+(assert-eq* (full-fn 1 2) [1 2 undefined undefined []])
+(assert-eq* (full-fn 1 b:2) [1 2 undefined undefined []])
+(assert-eq* (full-fn 1 b:17) [1 17 undefined undefined []])
 (assert-eq* (full-fn 7 b:8) [7 8 undefined undefined []])
 (assert-eq* (full-fn a:7 b:8) [7 8 undefined undefined []] )
 (assert-eq* (full-fn b:8 a:7) [7 8 undefined undefined []])
@@ -47,15 +48,15 @@
 (assert-eq* (full-fn 1 2 3 4 5) [1 2 3 4 [5]])
 (assert-eq* (full-fn 1 2 3 4 5 6) [1 2 3 4 [5 6]])
 
-
-(assert-js "(undefined-fn x:7)"
-           "Error: Hints in unknown function call: undefined-fn(x:7)")
-
-(assert-js "(defn test1 (x &))"
-           "Error: unexpected \'&\' in signature")
-
-(assert-js "(defn test2 (x & y & z))"
-           "Error: unexpected \'&\' in signature")
+;;; Hints in unknown function call: undefined-fn(x:7)
+(assert-js* "(undefined-fn x:7)"
+           "Error: ")
+;;; unexpected \'&\' in signature
+(assert-js* "(defn test1 (x &))"
+           "Error: ")
+;;; unexpected \'&\' in signature
+(assert-js* "(defn test2 (x & y & z))"
+           "Error: ")
 
 (assert-eq* ((fn (x y:3 opt-z: 4 & more)
                "Doc string."

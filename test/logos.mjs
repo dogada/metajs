@@ -19,8 +19,5 @@
 
 (parent-test "Parent")
 
-(defn root-test ()
-  (def hello-str (hello))
-  (assert (= hello-str "Hello undefined!") "hello in root-test (name)"))
-
-(root-test)
+;; Error(2): name is required for hello
+(assert-js* "(defn root-test () (hello))" "Error")

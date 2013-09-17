@@ -85,8 +85,9 @@
  "(contains? [1 2] 1)"
  "([1, 2].indexOf(1) !== -1);")
 
-(assert-js "(defmacro test-macro1 (x & y & z))"
-           "Error: unexpected \'&\' in signature")
+;;; unexpected \'&\' in signature
+(assert-js* "(defmacro test-macro1 (x & y & z))"
+           "Error: ")
 
 
 (assert-js "`(log ~a ~(first (rest seq)) ~@people ~@(rest more))"

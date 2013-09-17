@@ -143,6 +143,8 @@ T-shirt. It's time to dive into MetaJS:
 
 ```
 $ metajs -x test/index.mjs # run MetaJS test suite
+$ metajs --lint test/index.mjs # check unit tests for errors
+$ metajs --lint --lint-log-level=1 test/index.mjs # show only Lint errors, hide warnings and hints
 $ metajs # start TEPL (Translate Eval Print Loop)
 $ metajs src/cli.mjs  # compile single file to stdout
 $ metajs test/def.mjs test/hook.mjs --output ./ # compile 2 files to the working directory
@@ -150,6 +152,13 @@ $ metajs -e "(+ 2 2)" # advanced calculator
 $ metajs --help # print help to stdout
 $ make # rebuild MetaJS compiler and run test suite
 ```
+
+If you use Emacs you will enjoy MetaJS-support for flymake mode. The simplest
+method is to use [my fork of flymake](https://github.com/dogada/emacs-flymake),
+however you can also extend standard flymake with MetaJS support (use [this
+changeset](https://github.com/dogada/emacs-flymake/commit/01d6296597016d2e4ad51fb556439c8ade7d6ce8)
+as a hint). With flymake you will receive MetaJS feedback in real-time mode
+during edithing the code.
 
 ### How to get involved or learn more
 

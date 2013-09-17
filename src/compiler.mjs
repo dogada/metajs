@@ -79,7 +79,11 @@
           (join "" *env*.js)))
 
 (defn translate (text)
-  (compile (read text)))
+  ;; FIX: use *env*.lint-error-count
+  (def prev-error-count lint-error-count)
+  (do1 (compile (read text))
+       (when (> lint-error-count prev-error-count)
+         (throw* (new LintError (lint-report) (- lint-error-count prev-error-count))))))
 
 
 (export* metajs

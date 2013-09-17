@@ -5,10 +5,13 @@
         'stack []
         'file "<unknown>"
         'dir undefined
+        'file-role undefined
         'last-id 0
         '*assert-handler* metajs.throw-handler
-        'error error)
+        'error error
+        'lint-log-level 3)
 
+(include "./lint")
 (include "./scope")
 ;;; global scope for common macros like def, defn, etc
 (start-scope "global")

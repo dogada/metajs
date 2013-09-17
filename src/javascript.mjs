@@ -4,8 +4,8 @@
     js-name (js-symbol name)
     js-str (compile-raw raw-js)
     macro (try (eval js-str)
-               (catch e (error (str "error " e " in parsing macro "
-                                    (token-value* name) ":\n" js-str)))))
+               (catch e (syntax-error (str "error " e " in parsing macro "
+                                           (token-value* name) ":\n" js-str) name))))
   (if metajs.bootstrap-mode `(*call set-scope-macro (quote ~name) null ~raw-js)
       (do
         (set-scope-macro js-name args macro)
@@ -147,7 +147,7 @@
 
 (defmacro *try (code catch-form finally-form)
   (when (and (not catch-form) (not finally-form))
-    (error "At least catch or finally must be provided."))
+    (syntax-error "At least catch or finally must be provided." code))
   (def params ["try {\n" (rtrn code) "}"])
   (when catch-form
     (params.push " catch (" (expr (second catch-form)) ") {\n" (rtrn `(do ~@(slice catch-form 2))) "}"))

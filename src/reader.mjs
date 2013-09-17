@@ -113,6 +113,7 @@
 (defn read-compound (expected-bracket stream)
   (def ls []
     token (stream.read-token)
+    first-token token
     meta-mode false)
   (while (and token (!= token.value expected-bracket))
     (def value token.value)
@@ -125,12 +126,12 @@
           (set meta-mode false)))
     (set token (stream.read-token)))
   (when (not token)
-    (throw (str "Missed closing bracket: " expected-bracket ".")))
+    (syntax-error (str "Missed closing bracket: " expected-bracket ".")) first-token)
   ls)
 
 (defn read-simple (token stream)
   (when (token.match /^(\)|\]|\})$/)
-    (throw "Missed opening bracket."))
+    (syntax-error "Missed opening bracket." token))
   (if (number-str? token.value)
     (new Token (parse-float (token.value.replace (regex "," 'g) "")))
     token))
@@ -174,7 +175,7 @@
 
 (defn read-fn-arg (token stream)
   (when (undefined? *reader-fn-args*)
-    (error (str "Argument literal %" token.value " outside of #().")))
+    (syntax-error (str "Argument literal %" token.value " outside of #().") token))
   (def arg-id (or token.value "1"))
   (when (not (get *reader-fn-args* arg-id))
     (set-in *reader-fn-args* arg-id (make-param arg-id)))
@@ -184,7 +185,7 @@
 (defn read-dispatch (token stream)
   (switch (first token.value)
           "(" (read-fn)
-          (error (str "Unsupported dispatch: " token.value))))
+          (syntax-error (str "Unsupported dispatch: " token.value) token)))
 
 (defn read-form (token stream)
   (comment log "read-form" stream.index token)
@@ -271,13 +272,8 @@
       (when form
         (forms.push form)))
     (catch e
-        (read-error e.message stream.last-token)))
+        (fatal-error e.message stream.last-token)))
   forms)
-
-(defn read-error (message token)
-  (throw (str message "\nStopped at: " (token-value* token) "\n"
-              (and token (token.source-str)))))
-
 
 (defn pr-atom (atom)
   (if (string? atom)

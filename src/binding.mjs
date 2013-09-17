@@ -12,12 +12,12 @@
 (defn expand-set (name value)
   (if (list-literal? name)  (merge (expand-vector-bind (rest name) value expand-set))
       (or (literal? name) (list? name)) [name value]
-      (error (str "Unsupported left part of set: " (pr1 name)))))
+      (syntax-error (str "Unsupported left part of set: " (pr1 name)) name)))
 
 (defn expand-def (name value)
   (if (list-literal? name)  (merge (expand-vector-bind (rest name) value expand-def))
       (literal? name) [name value]
-      (error (str "Unsupported left part of def: " (pr1 name)))))
+      (syntax-error (str "Unsupported left part of def: " (pr1 name)) name)))
 
 (defn bind-set (name value)
   (cdata (expr name) " = " (expr value)))

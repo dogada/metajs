@@ -3,8 +3,10 @@
    (def $mjs ($ this))
    ($mjs .parent .next .find "code" .text
          (try
+           (metajs.reset-lint)
            (metajs.translate ($mjs.val))
-           (catch e e.message))))
+           (catch e
+               (str e.message "\nPlease look at console's log and fix errors.")))))
 
  (defn init-examples ()
    ($ "pre"

@@ -22,21 +22,20 @@
     (set file (str file ".mjs")))
   (when (file.match (regex "^\\./"))
     (set file (str metajs.dir "/" file)))
-  (metajs.translate-file (require.resolve file)))
+  (metajs.translate-file (require.resolve file) "Include"))
 
 (defmacro include (file)
   (with-meta {virtual: true}
     (cdata (metajs.include (eval-expr file)))))
 
-(defn with-dir-and-file (dir file func)
+(defn with-dir-and-file (dir file role func)
   (def scope (get-scope))
-  (rebind (metajs.dir dir metajs.file file scope.source file)
+  (rebind (metajs.dir dir metajs.file file metajs.file-role role scope.source file)
           (func)))
 
-(defn metajs.translate-file (file-name)
+(defn metajs.translate-file (file-name role:?)
   ;; (log "translate-file" file-name)
-  (with-dir-and-file (path.dirname file-name)
-    file-name
+  (with-dir-and-file (path.dirname file-name) file-name role
     (fn ()
       (metajs.translate
        (metajs.remove-script-header

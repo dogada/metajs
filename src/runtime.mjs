@@ -19,7 +19,7 @@
 (defn join (glue xs)
   (xs.join glue))
 
-(defn map (xs func self)
+(defn map (xs func self:?)
   (xs .map func self))
 
 (defn bulk-map (arr func)
@@ -31,7 +31,7 @@
     (set index (+ index arity)))
   res)
 
-(defn filter (xs func self)
+(defn filter (xs func self:?)
   (xs .filter func self))
 
 (defn compact (arr)

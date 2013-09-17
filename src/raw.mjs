@@ -1,4 +1,4 @@
-(defn Fragment (data meta)
+(defn Fragment (data meta:?)
   (set this.data data
        this.meta meta))
 
@@ -82,7 +82,7 @@
     (when (< i max-i)
       ;; ensure we don't have normal forms after hooked property
       (if-not (hook? (nth xs (+ i 1)))
-        (throw (str "Unsupported tail after " name)))))
+        (syntax-error (str "Unsupported tail after " name) name))))
   i)
 
 (defn process-hooks (xs)

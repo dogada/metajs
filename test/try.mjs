@@ -48,4 +48,4 @@
   }
 })();")
 
-(assert-js "(try a b c)" "Error: At least catch or finally must be provided.")
+(assert-js* "(try a b c)" "Error")

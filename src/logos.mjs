@@ -8,24 +8,19 @@
     expected (find-fn-signature name*))
   (def checked (if (= name* 'defmacro)
                  args
-                 (check-call-params name* args expected)))
+                 (check-call-params name args expected)))
   checked)
 
 (defn call-str (name args)
   (str name "("
        (join " " (map args (fn (arg)
-                             (if (has-meta? arg)
-                               (str arg.value ":" arg.meta)
-                               (if (list? arg) "[...]" arg)))))
+                             (if (has-meta? arg) (str arg.value ":" arg.meta)
+                                 (and arg arg.value) arg.value
+                                 (list? arg) "[...]"
+                                 arg))))
        ")"))
 
-(defn log-unresolved (arg fn-name hints)
-  (def message (str "Can't resolve " arg.presence " " arg.name " for " fn-name))
-  (if (not-empty? hints)
-    (error message)
-    (warn message)))
-
-(defn parse-params (name params expected)
+(defn parse-params (token name params expected)
   (def allow-hints (and (!= name 'defmacro) (!= name 'js)))
   (def positional [] hints [] rest [])
   (each (param i) params
@@ -36,13 +31,14 @@
             (rest.push param))))
   (when (and (undefined? expected) (not-empty? hints)
              allow-hints)
-    (error (str "Hints in unknown function call: " (call-str name hints))))
+    (lint-unknown-hints (str "Hints in unknown function call: " (call-str name hints)) token))
   (when (!= hints.length (length (keys (hash-map hints (fn (p) [p.value 1])))))
-    (error (str "Duplicated hints in the call: " (call-str name hints))))
+    (lint-duplicated-hints (str "Duplicated hints in the call: " (call-str name hints)) token))
   [positional hints rest])
 
-(defn check-call-params (name params expected)
-  (def parsed (parse-params)
+(defn check-call-params (fn-token params expected)
+  (def name (token-value* fn-token)
+    parsed (parse-params fn-token)
     [positional hints rest] parsed
     positional-count (length positional)
     expected-args (or expected [])
@@ -69,7 +65,7 @@
                ;; find missed but required arg from surrounding context or report error
                (def val (resolve-arg arg))
                (if val (resolved.push val)
-                   metajs.log-unresolved (log-unresolved arg fn-name hints)))
+                   (lint-missed-required-arg (str arg.name " is required for " name) fn-token)))
              'optional
              (when (or keyword-count (not-empty? hints) (not-empty? rest))
                ;; we have a hint for next argument or keyword argument, so for current optional arg use undefined
@@ -88,8 +84,8 @@
           (do
             (when (and (< index positional-count)
                        (!= arg.presence 'keyword))
-              (error (str "Non-keyword '" arg-name
-                          "' passed twice: positionaly and via hint.")))
+              (syntax-error (str arg-name
+                                 " passed twice: positionally and as keyword.") fn-token))
             (comment log "---------- Using hint at" index arg-name ":" hint)
             (resolved.push hint))
           (do
@@ -101,11 +97,11 @@
                   (resolved.push (positional.shift))))
               (resolve-blank arg)))))
   (when (not-empty? hints)
-    (error (str "Unsupported hints: " (call-str name hints))))
+    (syntax-error (str "Unsupported hints: " (call-str name hints)) fn-token))
   (set rest (concat positional rest)
        resolved (concat resolved rest))
   (when (and (not allowed-rest) (not-empty? rest))
-    (warn (str "Found " rest.length " undeclared rest params in " (call-str name rest))))
+    (lint-undeclared-rest (str "Found " rest.length " undeclared rest params in " (call-str name rest)) fn-token))
   resolved)
 
 (defn resolve-arg (arg)

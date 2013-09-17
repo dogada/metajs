@@ -7,7 +7,8 @@
 (assert-false (defined? z))
 (assert-eq z undefined)
 
-(assert-js "(def (get obj 'k) 1)" "Error: Unsupported left part of def: (get obj (quote k))")
+;;; Unsupported left part of def: (get obj (quote k))
+(assert-js* "(def (get obj 'k) 1)" "Error: ")
 
 (def a 2
   b (+ a 1)

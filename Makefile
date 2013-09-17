@@ -23,6 +23,7 @@ compile-all: $(MJS)
 
 compile-docs: compile-all
 	metajs -o ./doc/src/files/js/ ./doc/src/files/mjs/metajs_docs.mjs
+	cp ./lib/metajs_browser.js ./doc/out/js/
 
 gh-pages: compile-docs
 	cd ./doc && docpad generate && cd -
@@ -31,7 +32,7 @@ gh-pages: compile-docs
 	git status
 
 test: compile-all
-	metajs -x test/index.mjs
+	metajs -x --lint-log-level=0 test/index.mjs
 
 testjs: compile-all
 	metajs test/index.mjs -o tmp/

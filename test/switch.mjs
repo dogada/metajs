@@ -15,7 +15,7 @@
             (switch-test 6) "6 for sure"
             (switch-test 19) "unknown"
             (switch-test "str") "unknown"
-            (switch-test) "unknown")
+            (switch-test 100) "unknown")
 
 (defn switch-str (x)
   (switch x
@@ -36,5 +36,5 @@
             (switch-str "seven") 78
             (switch-str "eight") 78
             (switch-str "many") 1000
-            (switch-str) 1000)
+            (switch-str 42) 1000)
 

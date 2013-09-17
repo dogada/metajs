@@ -44,7 +44,7 @@
                       default-value: (get-meta-default (get-meta))}))
         (set last value))
   (when (or (= last "&") (contains-many? (filter args (fn (arg) (= arg.presence 'rest)))))
-    (error (str "unexpected '&' in signature" )))
+    (syntax-error (str "unexpected '&' in signature") (last arglist)))
   args)
 
 
