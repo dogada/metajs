@@ -3,9 +3,10 @@
     var $mjs = $(this);
     return $mjs.parent().next().find("code").text((function() {
       try {
+        metajs.resetLint();
         return metajs.translate($mjs.val());
       } catch (e) {
-        return e.message;
+        return (e.message + "\nPlease look at console's log and fix errors.");
       }
     })());
   });
