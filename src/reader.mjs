@@ -11,7 +11,7 @@
              literal            /[@\-]?[\$\*\.\w][\*\.\w-]*(\?|!)?/
              operand            /[\?><=!\+\/\*\-]+/
              at-index           /@\d+/
-             fn-arg             /%[1-9]?/
+             fn-arg             /%[1-9&$]?/
              colon              /:/
              ampersand          /&/
              close-paren        /\)/
@@ -149,20 +149,21 @@
     (cons "unquote" [(read-normal (token.slice 1))])))
 
 (defn make-fn-params (args)
-  (def params [] expected 1)
-  (each (arg) (sort (keys args))
-        (def arg-num (parseInt arg 10))
-        (while (> arg-num expected)
-          ;; fill holes in params with unused params
-          (params.push (make-param expected))
-          (inc expected))
-        (params.push (get args arg))
-        (set expected (+ 1 arg-num)))
+  (def params []
+    ids (keys args)
+    max-pos (parseInt (last (sort ids)) 10))
+  (while (> max-pos params.length)
+    ;; declare all positional params even if used only some of them
+    (params.push (make-param (+ params.length 1))))
+  (if (contains? ids "&") (params.push "&" (make-param "&")))
   params)
 
 (defn make-param (id)
   "Functions defined with #() can't be nested, so it safe don't use (gensym) here."
-  (str "__ArG_" id))
+  (switch id
+          "&" "__ArG_more"
+          "$" "arguments[arguments.length - 1]"
+          (str "__ArG_" id)))
 
 (defn read-fn (token stream)
   (when (defined? *reader-fn-args*)

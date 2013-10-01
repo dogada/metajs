@@ -67,6 +67,7 @@
 
 (assert-eq* (test-defn1 7) [7 undefined 4 []])
 
+
 (assert-eq* (#(list % %2 %3) 1 2 3) [1 2 3])
 (assert-eq* (#(list %1 %2 %3) 1 2 3) [1 2 3])
 (assert-eq* (#(list % % %) 1 2) [1 1 1])
@@ -74,5 +75,18 @@
 (assert-eq* (#(list %1 % %1) 1 2) [1 1 1])
 (assert-eq* (#(list %1 %3) 1 2 3) [1 3])
 
+;; last argument %$ -> arguments[arguments.length - 1]
+(assert-eq* (#(list %$)) [undefined])
+(assert-eq* (#(list %$) 1) [1])
+(assert-eq* (#(list % %$) 1) [1 1])
+(assert-eq* (#(list %1 %$) 1) [1 1])
+(assert-eq* (#(list %3 %$) 1) [undefined 1])
+(assert-eq* (#(list %1 %$) 1 2) [1 2])
 
 
+(assert-eq* (#(list %&)) [[]])
+(assert-eq* (#(list %&) 1) [[1]])
+(assert-eq* (#(list %&) 1 2) [[1 2]])
+(assert-eq* (#(list %1 %&) 1 2) [1 [2]])
+(assert-eq* (#(list %1 %&) 1 2 3) [1 [2 3]])
+(assert-eq* (#(list %1 %$ %&) 1 2 3) [1 3 [2 3]])
