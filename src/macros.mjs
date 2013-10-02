@@ -129,3 +129,21 @@
   (cdata "(Array.prototype.slice.apply(arguments))"))
 
 
+(defn -debug-arg (arg)
+  ['str (wrap-in-double-quotes (str arg "=")) arg])
+
+(defn -fmt-arg (arg)
+  (if (processed-string-escape-re.test arg) "\"$\""
+      (processed-string-debug-re.test arg) (-debug-arg (arg.slice 2))
+      (arg.slice 1)))
+
+(defn -fmt-str (s)
+  (def tokens ((strip-double-quotes (token-value* s)) .split processed-string-arg-re))
+  (cons 'str (map tokens #(if* (processed-string-arg-word-re.test %) (-fmt-arg %)
+                               (wrap-in-double-quotes %)))))
+
+(defmacro fmt (s)
+  (if (list-name? s 'fmt) `(fmt ~(second s))
+      (quoted? s) (-fmt-str s)
+      (syntax-error "(fmt) accepts as pattern string only." s)))
+

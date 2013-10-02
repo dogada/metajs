@@ -2,6 +2,10 @@
   "In MetaJS list is Javascript's native array."
   (array? x))
 
+(defn list? (x)
+  "In MetaJS list is Javascript's native array."
+  (array? x))
+
 (defn concat (ls & xs)
   "Combine several lists into one. Atoms wrapped into lists before appending."
   (Array.prototype.concat.apply ls xs))

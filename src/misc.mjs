@@ -8,8 +8,5 @@
     (or (first-token (first form)) (first-token (rest form)))
     (if (token? form) form)))
 
-(defn list-name? (form name)
-  (and (list? form) (= (token-value* (first form)) name)))
-
 
 

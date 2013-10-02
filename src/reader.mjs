@@ -24,15 +24,23 @@
   "Raw string without javascript escaping."
   (str "/^" tokens.literal.source "$/"))
 
+(defn word-re (re)
+  (regex (str "^" re.source "$")))
+
 (def -token-order '(regex comment string number special-literal operand
                           at-index fn-arg colon ampersand
                           special-open-paren close-paren alternative-parens)
   -parser-re (join "|" (map -token-order #(str "(" ((get tokens %) @source) ")")))
   js-id-re /^[a-zA-Z_]\w*$/
   literal-re (*literal-regexp)
-  operand-re (regex (str "^" tokens.operand.source "$"))
+  operand-re (word-re tokens.operand)
   constants '(true false null undefined)
+  processed-string-arg-re /(\$\$|\$=?[a-zA-Z][\w-]*|\$=?\(.*\))/
+  processed-string-arg-word-re (word-re processed-string-arg-re)
+  processed-string-escape-re /^\$\$$/
+  processed-string-debug-re /^\$=/
   *reader-fn-args*)
+
 
 (defn token? (item)
   (and (defined? item) (defined? item.value)))
@@ -74,14 +82,17 @@
   (match? (regex "^;") string))
 
 
+(defn list-name? (form name)
+  (and (list? form) (= (token-value* (first form)) name)))
+
 (defn list-literal? (x)
-  (and (list? x) (= 'list (token-value* (first x)))))
+  (list-name? x 'list))
 
 (defn hash? (x)
-  (and (list? x) (= 'hash (token-value* (first x)))))
+  (list-name? x 'hash))
 
 (defn list-not-literal? (x)
-  (and (list? x) (!= 'list (token-value* (first x)))))
+  (and (list? x) (not (list-name? x 'list))))
 
 (defn has-meta? (token)
   (and (defined? token) (defined? token.meta) (not-empty? token.meta)))
@@ -129,12 +140,18 @@
     (syntax-error (str "Missed closing bracket: " expected-bracket ".")) first-token)
   ls)
 
+(defn read-number (token stream)
+  (new Token (parse-float (token.value.replace (regex "," 'g) ""))))
+
+(defn processed-string? (s)
+  (and (quoted? s) (processed-string-arg-re.test s)))
+
 (defn read-simple (token stream)
   (when (token.match /^(\)|\]|\})$/)
     (syntax-error "Missed opening bracket." token))
-  (if (number-str? token.value)
-    (new Token (parse-float (token.value.replace (regex "," 'g) "")))
-    token))
+  (if (number-str? token.value) (read-number)
+      (processed-string? token.value) ['fmt token.value]
+      token))
 
 (defn read-normal (token stream)
   (switch token.value

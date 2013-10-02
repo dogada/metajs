@@ -119,3 +119,12 @@ body {
     margin-bottom: 20px;
 }
 
+pre {
+    position: relative;
+}
+
+.run {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+}

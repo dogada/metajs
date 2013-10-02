@@ -41,12 +41,12 @@
       (wrap-in-double-quotes (js-literal value))))
 
 (defn quote? (x)
-  (and (list? x) (= (first x) 'quote)))
+  (list-name? x 'quote))
 
 (defn metajs.merge-sq (ls)
   (def merged [])
   (each (form) ls
-        (if (and (list? form) (= (first form) "unquote-splicing"))
+        (if (list-name? form "unquote-splicing")
           (set merged (merged.concat (second form)))
           (merged.push form)))
   merged)

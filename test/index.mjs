@@ -26,6 +26,7 @@
 (include "./switch.mjs")
 (include "./hook.mjs")
 (include "./yield.mjs")
+(include "./format.mjs")
 
 (include "./last.mjs")
 
