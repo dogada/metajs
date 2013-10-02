@@ -1,22 +1,33 @@
 (scoped
  (defn translate ()
-   (def $mjs ($ this))
-   ($mjs .parent .next .find "code" .text
+   (def $mjs ($ this)
+     $pre ($mjs .parent .next)
+     $run ($pre.find ".run"))
+   ($pre .find "code" .text
          (try
            (metajs.reset-lint)
-           (metajs.translate ($mjs.val))
+           (do1
+            (metajs.translate ($mjs.val))
+            ($run.show))
            (catch e
+               ($run.hide)
                (str e.message "\nPlease look at console's log and fix errors.")))))
+ (defn run ()
+   (log "Eval result: " (eval (($ this) .parent .find "code" .text))))
 
  (defn init-examples ()
    ($ "pre"
       .wrap "<div class=\"row sample\" />"
-      .after "<div class=\"col-md-6\"><pre><code>js</code></pre>"
+      .after (str "<div class=\"col-md-6\"><pre><code>js</code>"
+                  (if* (($ "#tepl") @length) "<button type=\"button\" class=\"btn btn-primary run\">Run</button>" "")
+                  "</pre>")
       .wrap "<div class=\"col-md-6\"><textarea class=\"mjs\"/></div>"
       .replaceWith #($ this .children .first .text))
    ($ "textarea.mjs"
       .each translate
-      .on "keyup" translate))
+      .on "keyup" translate)
+   ($ ".run"
+      .on "click" run))
 
  (defn make-toc ()
    ($ "h4" .each #(($ this) .attr "id" ($ this .text .toLowerCase .replace /\ /g "-"))))

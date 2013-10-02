@@ -245,6 +245,11 @@ var list__QUERY = (function(x) {
   return (x && ((x).constructor.name === "Array"));
 });
 
+var list__QUERY = (function(x) {
+  /* In MetaJS list is Javascript's native array. */
+  return (x && ((x).constructor.name === "Array"));
+});
+
 var concat = (function(ls) {
   /* Combine several lists into one. Atoms wrapped into lists before appending. */
   var xs = Array.prototype.slice.call(arguments, 1, undefined);
@@ -257,7 +262,7 @@ var cons = (function() {
   (function(p0, p1) {
     var evaluated = (p0 && p1),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/runtime.mjs:11:16",
+      "path": "/home/dogada/projects/MJS/src/runtime.mjs:15:16",
       "assertion": "(and (>= xs.length 2) (list? (last xs)))",
       "quotedParams": ["(>= xs.length 2)", "(list? (last xs))"],
       "resolvedParams": [p0, p1]
@@ -397,7 +402,7 @@ var tokens = {
   literal: /[@\-]?[\$\*\.\w][\*\.\w-]*(\?|!)?/,
   operand: /[\?><=!\+\/\*\-]+/,
   atIndex: /@\d+/,
-  fnArg: /%[1-9]?/,
+  fnArg: /%[1-9&$]?/,
   colon: /:/,
   ampersand: /&/,
   closeParen: /\)/,
@@ -412,14 +417,22 @@ setScopeMacro("_literalRegexp", null, (function() {
   return ("/^" + tokens.literal.source + "$/");
 }));
 
+var wordRe = (function(re) {
+  return (new RegExp(("^" + re.source + "$"), undefined));
+});
+
 var __tokenOrder = ["regex", "comment", "string", "number", "specialLiteral", "operand", "atIndex", "fnArg", "colon", "ampersand", "specialOpenParen", "closeParen", "alternativeParens"],
     __parserRe = join("|", map(__tokenOrder, (function(__ArG_1) {
   return ("(" + (tokens)[__ArG_1].source + ")");
 }))),
     jsIdRe = /^[a-zA-Z_]\w*$/,
     literalRe = /^[@\-]?[\$\*\.\w][\*\.\w-]*(\?|!)?$/,
-    operandRe = (new RegExp(("^" + tokens.operand.source + "$"), undefined)),
+    operandRe = wordRe(tokens.operand),
     constants = ["true", "false", "null", "undefined"],
+    processedStringArgRe = /(\$\$|\$=?[a-zA-Z][\w-]*|\$=?\(.*\))/,
+    processedStringArgWordRe = wordRe(processedStringArgRe),
+    processedStringEscapeRe = /^\$\$$/,
+    processedStringDebugRe = /^\$=/,
     _readerFnArgs_;
 
 var token__QUERY = (function(item) {
@@ -471,16 +484,20 @@ var comment__QUERY = (function(string) {
   return string.match((new RegExp("^;", undefined)));
 });
 
+var listName__QUERY = (function(form, name) {
+  return (list__QUERY(form) && (tokenValue_((form)[0]) === name));
+});
+
 var listLiteral__QUERY = (function(x) {
-  return (list__QUERY(x) && ("list" === tokenValue_((x)[0])));
+  return listName__QUERY(x, "list");
 });
 
 var hash__QUERY = (function(x) {
-  return (list__QUERY(x) && ("hash" === tokenValue_((x)[0])));
+  return listName__QUERY(x, "hash");
 });
 
 var listNotLiteral__QUERY = (function(x) {
-  return (list__QUERY(x) && ("list" !== tokenValue_((x)[0])));
+  return (list__QUERY(x) && !listName__QUERY(x, "list"));
 });
 
 var hasMeta__QUERY = (function(token) {
@@ -546,12 +563,22 @@ var readCompound = (function(expectedBracket, stream) {
   return ls;
 });
 
+var readNumber = (function(token, stream) {
+  return (new Token(parseFloat(token.value.replace((new RegExp(",", "g")), ""))));
+});
+
+var processedString__QUERY = (function(s) {
+  return (quoted__QUERY(s) && processedStringArgRe.test(s));
+});
+
 var readSimple = (function(token, stream) {
   if (token.match(/^(\)|\]|\})$/)) {
     syntaxError("Missed opening bracket.", token);
   }
   if (numberStr__QUERY(token.value)) {
-    return (new Token(parseFloat(token.value.replace((new RegExp(",", "g")), ""))));
+    return readNumber(token, stream) /*logos:2*/ ;
+  } else if (processedString__QUERY(token.value)) {
+    return ["fmt", token.value];
   } else {
     return token;
   }
@@ -578,23 +605,27 @@ var readUnquote = (function(token, stream) {
 
 var makeFnParams = (function(args) {
   var params = [],
-    expected = 1;
-  sort(Object.keys(args)).forEach((function(arg) {
-    var argNum = parseInt(arg, 10);
-    while ((argNum > expected)) {
-      // fill holes in params with unused params;
-      params.push(makeParam(expected));
-      ((expected)++);
-    }
-    params.push((args)[arg]);
-    expected = (1 + argNum);
-  }));
+    ids = Object.keys(args),
+    maxPos = parseInt((sort(ids))[(sort(ids).length - 1)], 10);
+  while ((maxPos > params.length)) {
+    // declare all positional params even if used only some of them;
+    params.push(makeParam((params.length + 1)));
+  }
+  if ((ids.indexOf("&") !== -1)) {
+    params.push("&", makeParam("&"));
+  }
   return params;
 });
 
 var makeParam = (function(id) {
   /* Functions defined with #() can't be nested, so it safe don't use (gensym) here. */
-  return ("__ArG_" + id);
+  return (function() {
+    switch (id) {
+      case "&": return "__ArG_more";
+      case "$": return "arguments[arguments.length - 1]";
+      default: return ("__ArG_" + id);
+      }
+  })();
 });
 
 var readFn = (function(token, stream) {
@@ -860,13 +891,13 @@ var quote_ = (function(x) {
 });
 
 var quote__QUERY = (function(x) {
-  return (list__QUERY(x) && ((x)[0] === "quote"));
+  return listName__QUERY(x, "quote");
 });
 
 metajs.mergeSq = (function(ls) {
   var merged = [];
   ls.forEach((function(form) {
-    if ((list__QUERY(form) && ((form)[0] === "unquote-splicing"))) {
+    if (listName__QUERY(form, "unquote-splicing")) {
       merged = merged.concat((form)[1]);
     } else {
       return merged.push(form);
@@ -2823,6 +2854,37 @@ setScopeMacro("arguments", null, (function() {
     return cdata("(Array.prototype.slice.apply(arguments))");
   }));
   
+  var __debugArg = (function(arg) {
+    return ["str", wrapInDoubleQuotes((arg + "=")), arg];
+  });
+  
+  var __fmtArg = (function(arg) {
+    if (processedStringEscapeRe.test(arg)) {
+      return "\"$\"";
+    } else if (processedStringDebugRe.test(arg)) {
+      return __debugArg(arg.slice(2));
+    } else {
+      return arg.slice(1);
+    }
+  });
+  
+  var __fmtStr = (function(s) {
+    var tokens = stripDoubleQuotes(tokenValue_(s)).split(processedStringArgRe);
+    return cons("str", map(tokens, (function(__ArG_1) {
+      return (processedStringArgWordRe.test(__ArG_1) ? __fmtArg(__ArG_1) : wrapInDoubleQuotes(__ArG_1));
+    })));
+  });
+  
+setScopeMacro("fmt", null, (function(s) {
+    if (listName__QUERY(s, "fmt")) {
+      return metajs.mergeSq(["fmt", (s)[1]]);
+    } else if (quoted__QUERY(s)) {
+      return __fmtStr(s);
+    } else {
+      return syntaxError("(fmt) accepts as pattern string only.", s);
+    }
+  }));
+  
           
 var firstAtom = (function(form) {
   if (list__QUERY(form)) {
@@ -2840,10 +2902,6 @@ var firstToken = (function(form) {
       return form;
     }
   }
-});
-
-var listName__QUERY = (function(form, name) {
-  return (list__QUERY(form) && (tokenValue_((form)[0]) === name));
 });
 
           
