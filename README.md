@@ -103,6 +103,15 @@ for keyword-only function parameters will be finalised.
 (demo-fn "Just A" "noumenon" c:42)
 ```
 
+You can embed variables inside [interpolated
+strings](http://en.wikipedia.org/wiki/String_interpolation) that are started with `#`.
+Inside such strings `$symbol` is replaced with symbol's value and `$=var`
+replaced with pair _name=value_. For escaping `$` itself use `$$`.
+
+```lisp
+(= #"Hello, $nickname!" (str "Hello, " nickname "!"))
+```
+
 MetaJS is under active development. In the nearest plans is to finish javascript
 source maps support and explicit semantic code transformations. Then add
 namespaces and integrate support of

@@ -7,6 +7,7 @@ cacheable: true
   <li>[Destructuring](#destructuring)</li>
   <li>[Hooks](#method-and-property-hooks)</li>
   <li>[Macros](#macros)</li>
+  <li>[String interpolation](#string-interpolation)</li>
   <li>[Functions](#functions)</li>
   <li>[Smart compilation](#smart-compilation)</li>
   <li>[Magic](#magic)</li>

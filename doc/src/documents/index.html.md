@@ -57,6 +57,19 @@ To define a macro you can use standard Lisp syntax-quote, unquote and unquote-sp
 (when earth-moves (log "And yet it moves!"))
 ```
 
+#### String interpolation
+
+You can embed variables inside [interpolated
+strings](http://en.wikipedia.org/wiki/String_interpolation) that are started with `#`.
+Inside such strings `$symbol` is replaced with symbol's value and `$=var`
+replaced with pair _name=value_. For escaping `$` itself use `$$`.
+
+```
+#"Hello, $name!"
+#"$name, you got $$100."
+#"Debug: $=name, $=last-value."
+```
+
 #### Functions
 
 Functions can have optional parameters and parameters with default values. Each
@@ -119,7 +132,7 @@ optional parameters in the execution context.
 
 In the above example local variable `opt` from `logos-demo` function isn't passed to
 `named-id` function, because `opt` argument declared as *optional* for
-`named-id` function (and has default value &mdash; empty string). If you missed a required
+`named-id` function (and has default value &ndash; empty string). If you missed a required
 variable and MetaJS can't find it in the call context or there more than one
 possible solution, you should see a warning.
 
@@ -128,3 +141,7 @@ possible solution, you should see a warning.
 For experiments with bigger code parts you can use [Translate Eval
 Print Loop (TEPL)](/tepl/) or [install
 MetaJS](https://github.com/dogada/metajs#how-to-install-and-try-metajs) locally.
+
+Look at the discussions about MetaJS on
+[Reddit](http://www.reddit.com/r/lisp/comments/1ltb9r/new_lisp_dialect_can_guess_your_thoughts_and_emit/)
+and [LOR](http://www.linux.org.ru/news/opensource/9546490). 
