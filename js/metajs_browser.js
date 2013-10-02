@@ -411,6 +411,7 @@ var tokens = {
 
 tokens.specialLiteral = (new RegExp((tokens.special.source + tokens.literal.source), undefined));
 tokens.specialOpenParen = (new RegExp((tokens.special.source + "@?" + "\\("), undefined));
+tokens.interpolatedString = (new RegExp(("#" + tokens.string.source), undefined));
 
 setScopeMacro("_literalRegexp", null, (function() {
   /* Raw string without javascript escaping. */
@@ -421,7 +422,7 @@ var wordRe = (function(re) {
   return (new RegExp(("^" + re.source + "$"), undefined));
 });
 
-var __tokenOrder = ["regex", "comment", "string", "number", "specialLiteral", "operand", "atIndex", "fnArg", "colon", "ampersand", "specialOpenParen", "closeParen", "alternativeParens"],
+var __tokenOrder = ["regex", "comment", "interpolatedString", "string", "number", "specialLiteral", "operand", "atIndex", "fnArg", "colon", "ampersand", "specialOpenParen", "closeParen", "alternativeParens"],
     __parserRe = join("|", map(__tokenOrder, (function(__ArG_1) {
   return ("(" + (tokens)[__ArG_1].source + ")");
 }))),
@@ -429,10 +430,10 @@ var __tokenOrder = ["regex", "comment", "string", "number", "specialLiteral", "o
     literalRe = /^[@\-]?[\$\*\.\w][\*\.\w-]*(\?|!)?$/,
     operandRe = wordRe(tokens.operand),
     constants = ["true", "false", "null", "undefined"],
-    processedStringArgRe = /(\$\$|\$=?[a-zA-Z][\w-]*|\$=?\(.*\))/,
-    processedStringArgWordRe = wordRe(processedStringArgRe),
-    processedStringEscapeRe = /^\$\$$/,
-    processedStringDebugRe = /^\$=/,
+    istringArgRe = /(\$\$|\$=?[a-zA-Z][\w-]*|\$=?\(.*\))/,
+    istringArgWordRe = wordRe(istringArgRe),
+    istringEscapeRe = /^\$\$$/,
+    istringDebugRe = /^\$=/,
     _readerFnArgs_;
 
 var token__QUERY = (function(item) {
@@ -567,8 +568,8 @@ var readNumber = (function(token, stream) {
   return (new Token(parseFloat(token.value.replace((new RegExp(",", "g")), ""))));
 });
 
-var processedString__QUERY = (function(s) {
-  return (quoted__QUERY(s) && processedStringArgRe.test(s));
+var istring__QUERY = (function(s) {
+  return (quoted__QUERY(s) && istringArgRe.test(s));
 });
 
 var readSimple = (function(token, stream) {
@@ -577,8 +578,6 @@ var readSimple = (function(token, stream) {
   }
   if (numberStr__QUERY(token.value)) {
     return readNumber(token, stream) /*logos:2*/ ;
-  } else if (processedString__QUERY(token.value)) {
-    return ["fmt", token.value];
   } else {
     return token;
   }
@@ -662,6 +661,7 @@ var readDispatch = (function(token, stream) {
   return (function() {
     switch ((token.value)[0]) {
       case "(": return readFn(token, stream) /*logos:2*/ ;
+      case "\"": return ["fmt", token];
       default: return syntaxError(("Unsupported dispatch: " + token.value), token);
       }
   })();
@@ -2859,9 +2859,9 @@ setScopeMacro("arguments", null, (function() {
   });
   
   var __fmtArg = (function(arg) {
-    if (processedStringEscapeRe.test(arg)) {
+    if (istringEscapeRe.test(arg)) {
       return "\"$\"";
-    } else if (processedStringDebugRe.test(arg)) {
+    } else if (istringDebugRe.test(arg)) {
       return __debugArg(arg.slice(2));
     } else {
       return arg.slice(1);
@@ -2869,19 +2869,17 @@ setScopeMacro("arguments", null, (function() {
   });
   
   var __fmtStr = (function(s) {
-    var tokens = stripDoubleQuotes(tokenValue_(s)).split(processedStringArgRe);
+    var tokens = stripDoubleQuotes(tokenValue_(s)).split(istringArgRe);
     return cons("str", map(tokens, (function(__ArG_1) {
-      return (processedStringArgWordRe.test(__ArG_1) ? __fmtArg(__ArG_1) : wrapInDoubleQuotes(__ArG_1));
+      return (istringArgWordRe.test(__ArG_1) ? __fmtArg(__ArG_1) : wrapInDoubleQuotes(__ArG_1));
     })));
   });
   
 setScopeMacro("fmt", null, (function(s) {
-    if (listName__QUERY(s, "fmt")) {
-      return metajs.mergeSq(["fmt", (s)[1]]);
-    } else if (quoted__QUERY(s)) {
+    if (quoted__QUERY(s)) {
       return __fmtStr(s);
     } else {
-      return syntaxError("(fmt) accepts as pattern string only.", s);
+      return syntaxError(("(fmt) requires string, but got" + tokenValue_(s) + "."), s);
     }
   }));
   

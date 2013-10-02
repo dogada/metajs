@@ -70,6 +70,11 @@ for keyword-only function parameters will be finalised.</p>
 
 ;; an example of the function call
 (demo-fn &quot;Just A&quot; &quot;noumenon&quot; c:42)</code></pre>
+<p>You can embed variables inside <a href="http://en.wikipedia.org/wiki/String_interpolation">interpolated
+strings</a> that are started with <code>#</code>.
+Inside such strings <code>$symbol</code> is replaced with symbol&#39;s value and <code>$=var</code>
+replaced with pair <em>name=value</em>. For escaping <code>$</code> itself use <code>$$</code>.</p>
+<pre><code class="lang-lisp">(= #&quot;Hello, $nickname!&quot; (str &quot;Hello, &quot; nickname &quot;!&quot;))</code></pre>
 <p>MetaJS is under active development. In the nearest plans is to finish javascript
 source maps support and explicit semantic code transformations. Then add
 namespaces and integrate support of

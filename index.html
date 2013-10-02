@@ -80,6 +80,7 @@
   <li><a href="#destructuring">Destructuring</a></li>
   <li><a href="#method-and-property-hooks">Hooks</a></li>
   <li><a href="#macros">Macros</a></li>
+  <li><a href="#string-interpolation">String interpolation</a></li>
   <li><a href="#functions">Functions</a></li>
   <li><a href="#smart-compilation">Smart compilation</a></li>
   <li><a href="#magic">Magic</a></li>
@@ -136,6 +137,14 @@ property of previous form, for example <code>(get obj &#39;prop)</code> can be w
   `(if ~x (do ~@code)))
 
 (when earth-moves (log &quot;And yet it moves!&quot;))</code></pre>
+<h4>String interpolation</h4>
+<p>You can embed variables inside <a href="http://en.wikipedia.org/wiki/String_interpolation">interpolated
+strings</a> that are started with <code>#</code>.
+Inside such strings <code>$symbol</code> is replaced with symbol&#39;s value and <code>$=var</code>
+replaced with pair <em>name=value</em>. For escaping <code>$</code> itself use <code>$$</code>.</p>
+<pre><code>#&quot;Hello, $name!&quot;
+#&quot;$name, you got $$100.&quot;
+#&quot;Debug: $=name, $=last-value.&quot;</code></pre>
 <h4>Functions</h4>
 <p>Functions can have optional parameters and parameters with default values. Each
 parameter can be passed positionally or as keyword. In addition function can
@@ -176,13 +185,16 @@ function parameters, i.e. do what you said it to do. It will not try to find
 optional parameters in the execution context.</p>
 <p>In the above example local variable <code>opt</code> from <code>logos-demo</code> function isn&#39;t passed to
 <code>named-id</code> function, because <code>opt</code> argument declared as <em>optional</em> for
-<code>named-id</code> function (and has default value &mdash; empty string). If you missed a required
+<code>named-id</code> function (and has default value &ndash; empty string). If you missed a required
 variable and MetaJS can&#39;t find it in the call context or there more than one
 possible solution, you should see a warning.</p>
 <h4>Try more</h4>
 <p>For experiments with bigger code parts you can use <a href="/tepl/">Translate Eval
 Print Loop (TEPL)</a> or <a href="https://github.com/dogada/metajs#how-to-install-and-try-metajs">install
 MetaJS</a> locally.</p>
+<p>Look at the discussions about MetaJS on
+<a href="http://www.reddit.com/r/lisp/comments/1ltb9r/new_lisp_dialect_can_guess_your_thoughts_and_emit/">Reddit</a>
+and <a href="http://www.linux.org.ru/news/opensource/9546490">LOR</a>.</p>
 
         </div>
 	
