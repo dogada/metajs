@@ -35,10 +35,10 @@
   literal-re (*literal-regexp)
   operand-re (word-re tokens.operand)
   constants '(true false null undefined)
-  processed-string-arg-re /(\$\$|\$=?[a-zA-Z][\w-]*|\$=?\(.*\))/
-  processed-string-arg-word-re (word-re processed-string-arg-re)
-  processed-string-escape-re /^\$\$$/
-  processed-string-debug-re /^\$=/
+  istring-arg-re /(\$\$|\$=?[a-zA-Z][\w-]*|\$=?\(.*\))/
+  istring-arg-word-re (word-re istring-arg-re)
+  istring-escape-re /^\$\$$/
+  istring-debug-re /^\$=/
   *reader-fn-args*)
 
 
@@ -143,14 +143,14 @@
 (defn read-number (token stream)
   (new Token (parse-float (token.value.replace (regex "," 'g) ""))))
 
-(defn processed-string? (s)
-  (and (quoted? s) (processed-string-arg-re.test s)))
+(defn istring? (s)
+  (and (quoted? s) (istring-arg-re.test s)))
 
 (defn read-simple (token stream)
   (when (token.match /^(\)|\]|\})$/)
     (syntax-error "Missed opening bracket." token))
   (if (number-str? token.value) (read-number)
-      (processed-string? token.value) ['fmt token.value]
+      (istring? token.value) ['fmt token.value]
       token))
 
 (defn read-normal (token stream)

@@ -133,13 +133,13 @@
   ['str (wrap-in-double-quotes (str arg "=")) arg])
 
 (defn -fmt-arg (arg)
-  (if (processed-string-escape-re.test arg) "\"$\""
-      (processed-string-debug-re.test arg) (-debug-arg (arg.slice 2))
+  (if (istring-escape-re.test arg) "\"$\""
+      (istring-debug-re.test arg) (-debug-arg (arg.slice 2))
       (arg.slice 1)))
 
 (defn -fmt-str (s)
-  (def tokens ((strip-double-quotes (token-value* s)) .split processed-string-arg-re))
-  (cons 'str (map tokens #(if* (processed-string-arg-word-re.test %) (-fmt-arg %)
+  (def tokens ((strip-double-quotes (token-value* s)) .split istring-arg-re))
+  (cons 'str (map tokens #(if* (istring-arg-word-re.test %) (-fmt-arg %)
                                (wrap-in-double-quotes %)))))
 
 (defmacro fmt (s)
