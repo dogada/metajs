@@ -143,7 +143,6 @@
                                (wrap-in-double-quotes %)))))
 
 (defmacro fmt (s)
-  (if (list-name? s 'fmt) `(fmt ~(second s))
-      (quoted? s) (-fmt-str s)
-      (syntax-error "(fmt) accepts as pattern string only." s)))
+  (if (quoted? s) (-fmt-str s)
+      (syntax-error (str "(fmt) requires string, but got" (token-value* s) ".") s)))
 

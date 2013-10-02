@@ -8,9 +8,9 @@
      (assert-by-2 =
                   (fmt "Hello, $name!") "Hello, Stas!"
                   (fmt "Hello, $name! Score: $score.") "Hello, Stas! Score: 100."
-                  "$name" "Stas"
-                  "Hello, $name! Score: $score." "Hello, Stas! Score: 100."
-                  "Score: $score. Balance $$100.21." "Score: 100. Balance $$100.21."
-                  "Escape: $$var" (str "Escape: " "$" "var")
-                  "Debug: $=name, $=score." "Debug: name=Stas, score=100."
+                  #"$name" "Stas"
+                  #"Hello, $name! Score: $score." "Hello, Stas! Score: 100."
+                  #"Score: $score. Balance $$100.21." "Score: 100. Balance $100.21."
+                  #"Escape: $$var" "Escape: $var"
+                  #"Debug: $=name, $=score." "Debug: name=Stas, score=100."
                   ))

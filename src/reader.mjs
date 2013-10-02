@@ -17,8 +17,10 @@
              close-paren        /\)/
              alternative-parens /\{|\[|\}|\]/})
 
-(set tokens.special-literal (regex (str tokens.special.source tokens.literal.source))
-     tokens.special-open-paren (regex (str tokens.special.source "@?" "\\(")))
+(set-in tokens
+        'special-literal (regex (str tokens.special.source tokens.literal.source))
+        'special-open-paren (regex (str tokens.special.source "@?" "\\("))
+        'interpolated-string (regex (str "#" tokens.string.source)))
 
 (defmacro *literal-regexp ()
   "Raw string without javascript escaping."
@@ -27,7 +29,7 @@
 (defn word-re (re)
   (regex (str "^" re.source "$")))
 
-(def -token-order '(regex comment string number special-literal operand
+(def -token-order '(regex comment interpolated-string string number special-literal operand
                           at-index fn-arg colon ampersand
                           special-open-paren close-paren alternative-parens)
   -parser-re (join "|" (map -token-order #(str "(" ((get tokens %) @source) ")")))
@@ -150,7 +152,6 @@
   (when (token.match /^(\)|\]|\})$/)
     (syntax-error "Missed opening bracket." token))
   (if (number-str? token.value) (read-number)
-      (istring? token.value) ['fmt token.value]
       token))
 
 (defn read-normal (token stream)
@@ -203,6 +204,7 @@
 (defn read-dispatch (token stream)
   (switch (first token.value)
           "(" (read-fn)
+          "\"" ['fmt token]
           (syntax-error (str "Unsupported dispatch: " token.value) token)))
 
 (defn read-form (token stream)
