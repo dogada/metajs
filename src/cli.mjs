@@ -2,7 +2,9 @@
   metajs (require "./metajs_node")
   program (require "commander")
   path (require 'path)
-  fs (require 'fs))
+  fs (require 'fs)
+  util (require 'util)
+  inspect  util.inspect)
 
 (include "./repl")
 
@@ -26,6 +28,7 @@
   (fs.write-file out-path js-str))
 
 (defn process-file (source-path)
+  (metajs.reset-state)                  ; clear root scope and lint
   (def js-str (metajs.translate-file source-path))
   (if program.lint (metajs.log-lint-report)
       program.execute (eval-js js-str source-path)
@@ -37,6 +40,7 @@
         (try
           (process-file (path.join (process.cwd) fname))
           (catch e
+              (log e.stack)
               (if (instanceof? e metajs.LintError) (metajs.log-lint-report)
                   (throw e))))))
 

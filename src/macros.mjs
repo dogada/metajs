@@ -130,7 +130,7 @@
 
 
 (defn -debug-arg (arg)
-  ['str (wrap-in-double-quotes (str arg "=")) arg])
+  ['str (wrap-in-double-quotes (str arg "=")) ['inspect arg]])
 
 (defn -fmt-arg (arg)
   (if (istring-escape-re.test arg) "\"$\""

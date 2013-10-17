@@ -117,6 +117,5 @@ to metajs.*assert-handler*."
               ~js-code))
 
 (defmacro assert-js* (metajs-code js-prefix)
-  `(assert-eq ((try ((metajs.translate ~metajs-code) .trim)
-                    (catch e (e.toString))) .indexOf ~js-prefix)
-              0))
+  `(assert (!= ((try ((metajs.translate ~metajs-code) .trim)
+                     (catch e (e.toString))) .indexOf ~js-prefix) -1)))

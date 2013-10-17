@@ -3,17 +3,14 @@
           'name name
           'source undefined
           'context {}
-          'macros {})
+          'macros {}
+          'entities {}
+          'symbols {}
+          'relations {})
   this)
 
 (defn Scope.prototype.set-fn (name args)
   (set-in this.context name args)
-  this)
-
-(defn Scope.prototype.set-vars (vars)
-  (def context this.context)
-  (each (v) vars
-        (set-in context v.name v))
   this)
 
 (defn Scope.prototype.set-macro (name args fn)
@@ -23,6 +20,50 @@
 (defn set-scope-macro (name args fn)
   ((get-scope) .set-macro name args fn))
 
+
+(defn -add-provider (target provider index)
+  (def providers (and (index .hasOwnProperty target) (get index target)))
+  (when-not providers
+    (set providers [])
+    (set-in index target providers))
+  (providers.push provider))
+
+(defn Scope.prototype.set-vars (vars)
+  (def context this.context
+    symbols this.symbols)
+  (each (v) vars
+        (set-in context v.name v)
+        (each (name) (get-token-entities v.token)
+              (-add-provider name v symbols)))
+  this)
+
+(defn -rel-targets (rel)
+  (def targets (second rel))
+  (if (list-literal? targets) (slice targets 1)
+      (token? targets) (list targets)
+      (syntax-error "Invalid relation." rel)))
+
+(defn make-rel-fn (code)
+  (eval (compile-one `(fn (sym rel) ~code))))
+
+(defn -add-rel (code rel fqn index)
+  (def rel-fn (make-rel-fn))
+  (each (target) (-rel-targets)
+        (-add-provider (token-value* target)
+                       {name: fqn
+                        code: rel-fn
+                        token: target})))
+
+(defn Scope.prototype.set-entity (name rels doc:?)
+  (def fqn (token-value* name)
+    index this.relations
+    entity {name: fqn type: 'entity rels: rels doc: doc})
+  (set-in this.entities fqn entity)
+  (each (rel) rels
+        (switch (token-value* (first rel))
+                'has (-add-rel ['list ['quote "."] 'sym 'rel])
+                'rel (-add-rel (rel @2))))
+  this)
 
 (defn get-stack ()
   metajs.stack)
@@ -34,6 +75,11 @@
 
 (defn finish-scope ()
   ((get-stack) .shift))
+
+(defn reset-scope ()
+  (def old-scope (get-scope))
+  (finish-scope)
+  (start-scope old-scope.name))
 
 (defn scope-count ()
   (length (get-stack)))
@@ -64,6 +110,19 @@
 (defn find-def (name)
   (find-in-stack 'context name))
 
+(defn find-entities (form)
+  "Find all entitities assotiated with a token."
+  (merge (compact (map (get-token-entities form) #(find-in-stack 'relations %)))))
+
+
+(defn find-symbols (entities)
+  (merge (compact (map entities #(find-in-stack 'symbols % (closure-scope-count))))))
+
+(defn dump-scope-logos ()
+  (log "symbols" (get (get-scope) 'symbols))
+  (log "entities" (get (get-scope) 'entities))
+  (log "relations" (get (get-scope) 'relations)))
+
 (defn find-closure-def (name)
   "Lookup for a def inside root def."
   (find-in-stack 'context name (closure-scope-count)))
@@ -86,7 +145,5 @@
   (each (scope) (get-stack)
         (log scope)))
 
-
-
-
-
+(export* metajs
+         dump-stack get-scope)

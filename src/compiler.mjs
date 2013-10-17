@@ -86,6 +86,17 @@
          (throw* (new LintError (lint-report) (- lint-error-count prev-error-count))))))
 
 
+(defn reset-state ()
+  "Reset state of the root scope of the compiler and don't touch global scope."
+  (reset-lint)
+  (reset-scope))
+
+
+(defmacro include (file)
+  "This macro depends on metajs.include that platform (node or browser) should implement."
+  (with-meta {virtual: true}
+    (cdata (metajs.include (eval-expr file)))))
+
 (export* metajs
-         compile translate js-literal js-symbol)
+         compile translate js-literal js-symbol reset-state)
 

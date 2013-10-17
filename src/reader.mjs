@@ -41,6 +41,7 @@
   istring-arg-word-re (word-re istring-arg-re)
   istring-escape-re /^\$\$$/
   istring-debug-re /^\$=/
+  entity-re /[A-za-z][\w-]*/
   *reader-fn-args*)
 
 
@@ -62,12 +63,19 @@
   (bool
    (and (string? value) (value.match literal-re))))
 
-
 (defn symbol? (token)
   (def value (token-value* token))
   (or
    (and (literal? value) (not-contains? constants value))
    (and (string? value) (value.match operand-re))))
+
+(defn entity? (token)
+  (def value (token-value* token))
+  (and (literal? value) (not-contains? constants value)
+       (string? value) (value.match entity-re)))
+
+(defn get-token-entities (token)
+  (cons (token-value* token) (filter (get-meta token) #(entity? %))))
 
 (defn value-literal? (token)
   (def value (token-value* token))
@@ -230,6 +238,11 @@
    this.source source
    this.meta [])
   this)
+
+(defn Token.prototype.inspect (depth)
+  (def res (str this.value))
+  (if (empty? this.meta) this.value
+      (str this.value ":" (this.meta.join ":"))))
 
 (defn Token.prototype.source-str ()
   (def self this)

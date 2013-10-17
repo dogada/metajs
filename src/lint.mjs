@@ -71,6 +71,9 @@
 (defn lint-duplicated-hints (message form)
   (lint-error 5))
 
+(defn lint-many-candidates (message form)
+  (lint-error 6))
+
 (export* metajs
          LintError
          log-lint-report lint-exit-code reset-lint)

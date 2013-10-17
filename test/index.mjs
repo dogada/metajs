@@ -1,4 +1,6 @@
-(def metajs (require "../lib/metajs_node"))
+(def metajs (require "../lib/metajs_node")
+    util (require 'util)
+    inspect  util.inspect)
 
 (set-in metajs '*assert-handler* metajs.test-handler)
 (console.log (str "Testing " (metajs.version-string)))

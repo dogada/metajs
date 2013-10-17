@@ -24,10 +24,6 @@
     (set file (str metajs.dir "/" file)))
   (metajs.translate-file (require.resolve file) "Include"))
 
-(defmacro include (file)
-  (with-meta {virtual: true}
-    (cdata (metajs.include (eval-expr file)))))
-
 (defn with-dir-and-file (dir file role func)
   (def scope (get-scope))
   (rebind (metajs.dir dir metajs.file file metajs.file-role role scope.source file)

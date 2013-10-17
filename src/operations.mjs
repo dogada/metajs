@@ -146,8 +146,5 @@
   `(~xs .slice 1))
 
 (defmacro frest (xs)
-  `(~xs .slice 1))
-
-(defmacro frest (xs)
   `(list (first ~xs) (rest ~xs)))
 

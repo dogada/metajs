@@ -5,11 +5,12 @@
      $run ($pre.find ".run"))
    ($pre .find "code" .text
          (try
-           (metajs.reset-lint)
+           (metajs.reset-state)
            (do1
             (metajs.translate ($mjs.val))
             ($run.show))
            (catch e
+               (log e.stack)
                ($run.hide)
                (str e.message "\nPlease look at console's log and fix errors.")))))
  (defn run ()

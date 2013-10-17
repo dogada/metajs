@@ -107,8 +107,9 @@
   (def name (first forms)
     js-name (js-symbol name)
     macro (find-macro js-name))
+  ;; (check-call name (forms.slice 1))
   (if (undefined? name) 'null
-      macro (apply macro (check-call name (forms.slice 1)))
+      macro (apply macro (forms.slice 1))
       (apply (find-macro '*call) forms)))
 
 (defn raw-list-deep (token)

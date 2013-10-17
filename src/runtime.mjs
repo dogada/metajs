@@ -77,4 +77,4 @@
 
 ;;; export symbols to exports if defined, otherwise to global object (window)
 (export* (if (defined? exports) exports this)
-         list? cons conj map zip zip*)
+         list? cons conj map zip zip* concat)

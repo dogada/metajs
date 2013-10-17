@@ -34,6 +34,9 @@ gh-pages: compile-docs
 test: compile-all
 	metajs -x --lint-log-level=0 test/index.mjs
 
+test-lint: compile-all
+	metajs -x test/index.mjs
+
 testjs: compile-all
 	metajs test/index.mjs -o tmp/
 	node ./tmp/index.js
