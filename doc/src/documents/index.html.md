@@ -144,4 +144,7 @@ MetaJS](https://github.com/dogada/metajs#how-to-install-and-try-metajs) locally.
 
 Look at the discussions about MetaJS on
 [Reddit](http://www.reddit.com/r/lisp/comments/1ltb9r/new_lisp_dialect_can_guess_your_thoughts_and_emit/)
-and [LOR](http://www.linux.org.ru/news/opensource/9546490). 
+and [LOR](http://www.linux.org.ru/news/opensource/9546490).
+
+You can find more information about semantic code transformations, examples of
+symbolic and entitative MetaJS to JavaScipt transformations in the [metajs_semantic_code_transformations.pdf](/pdf/metajs_semantic_code_transformations.pdf).

@@ -4,7 +4,7 @@ Write on **lisp**. Compile to pure **javascript** without runtime dependencies.
 Enjoy compiler that can **guess your thoughts** and **generate missed
 parts of code**.
 
-### Logos-oriented programming language
+### Knowledge-oriented programming language
 
 MetaJS is yet another attempt to create better programming language for modern
 world. More about MetaJS background, why it was chosen Lisp-syntax and why it's
@@ -18,10 +18,13 @@ in MetaJS and can recompile itself. Look at the [interactive
 MetaJS-documentation](http://metajs.coect.net/) where you can try MetaJS without
 leaving your browser.
 
-Logos-oriented programming as opposed to object-oriented or functional one gives
+Knowledge-oriented programming as opposed to object-oriented or functional one gives
 main priority to semantic models of the program instead of building blocks of
 the program (objects or functions). Each semantic model (in the form that
-compiler can understand) is called logos.
+compiler can understand) is called [logos](http://en.wikipedia.org/wiki/Logos).
+
+You can find more information about semantic code transformations, examples of
+symbolic and entitative MetaJS to JavaScipt transformations in the [metajs_semantic_code_transformations.pdf](http://metajs.coect.net/pdf/metajs_semantic_code_transformations.pdf).
 
 ### Seamless integration with Javascript
 
@@ -94,7 +97,7 @@ accept variable number of parameters that are accessible as list. Shortly syntax
 for keyword-only function parameters will be finalised.
 
 ```lisp
-;; 'a' is required, 'b' is required and associated with an entity named 'Thing' defined in a logos
+;; 'a' is required, 'b' is required and associated with an entity 'Thing'
 ;; 'c' is optional, 'd' is optional and has default value 2, 'more' holds rest positional parameters
 (defn demo-fn (a b:Thing c:? d:2 & more)
  (log a b c d more))
@@ -119,14 +122,6 @@ namespaces and integrate support of
 list](http://github.com/dogada/metajs/issues) of planned changes and offer your
 own.
 
-
-### Credits
-
-- I learned a lot about Lisp from [Paul
-Graham's articles](http://www.paulgraham.com/lisp.html).
-- I used syntax of [Clojure](http://www.clojure.org/) as starting point for MetaJS syntax.
-- Some ideas about implementing Lisp on top of Javascript are borrowed from [ClojureScript](https://github.com/clojure/clojurescript),
-[Sibilant](https://github.com/jbr/sibilant) and [LispyScript](https://github.com/santoshrajan/lispyscript).
 
 ### How to install and try MetaJS
 
