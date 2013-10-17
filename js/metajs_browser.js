@@ -117,12 +117,16 @@ var lintDuplicatedHints = (function(message, form) {
   return lintError(5, message, form) /*logos:2*/ ;
 });
 
+var lintManyCandidates = (function(message, form) {
+  return lintError(6, message, form) /*logos:2*/ ;
+});
+
 (function() {
-  var G__14 = metajs;
-  G__14.LintError = LintError;
-  G__14.logLintReport = logLintReport;
-  G__14.lintExitCode = lintExitCode;
-  G__14.resetLint = resetLint;
+  var G__15 = metajs;
+  G__15.LintError = LintError;
+  G__15.logLintReport = logLintReport;
+  G__15.lintExitCode = lintExitCode;
+  G__15.resetLint = resetLint;
 })();
 
   
@@ -131,19 +135,14 @@ var Scope = (function(name) {
   this.source = undefined;
   this.context = {};
   this.macros = {};
+  this.entities = {};
+  this.symbols = {};
+  this.relations = {};
   return this;
 });
 
 Scope.prototype.setFn = (function(name, args) {
   (this.context)[name] = args;
-  return this;
-});
-
-Scope.prototype.setVars = (function(vars) {
-  var context = this.context;
-  vars.forEach((function(v) {
-    (context)[v.name] = v;
-  }));
   return this;
 });
 
@@ -154,6 +153,74 @@ Scope.prototype.setMacro = (function(name, args, fn) {
 
 var setScopeMacro = (function(name, args, fn) {
   return getScope().setMacro(name, args, fn);
+});
+
+var __addProvider = (function(target, provider, index) {
+  var providers = (index.hasOwnProperty(target) && (index)[target]);
+  if (!providers) {
+    providers = [];
+    (index)[target] = providers;
+  }
+  return providers.push(provider);
+});
+
+Scope.prototype.setVars = (function(vars) {
+  var context = this.context,
+    symbols = this.symbols;
+  vars.forEach((function(v) {
+    (context)[v.name] = v;
+    return getTokenEntities(v.token).forEach((function(name) {
+      return __addProvider(name, v, symbols);
+    }));
+  }));
+  return this;
+});
+
+var __relTargets = (function(rel) {
+  var targets = (rel)[1];
+  if (listLiteral__QUERY(targets)) {
+    return targets.slice(1, undefined);
+  } else if (token__QUERY(targets)) {
+    return [targets];
+  } else {
+    return syntaxError("Invalid relation.", rel);
+  }
+});
+
+var makeRelFn = (function(code) {
+  return eval(compileOne(metajs.mergeSq(["fn", metajs.mergeSq(["sym", "rel"]), code])));
+});
+
+var __addRel = (function(code, rel, fqn, index) {
+  var relFn = makeRelFn(code) /*logos:1*/ ;
+  return __relTargets(rel) /*logos:1*/ .forEach((function(target) {
+    return __addProvider(tokenValue_(target), {
+      name: fqn,
+      code: relFn,
+      token: target
+}, index) /*logos:1*/ ;
+  }));
+});
+
+Scope.prototype.setEntity = (function(name, rels, doc) {
+  var fqn = tokenValue_(name),
+    index = this.relations,
+    entity = {
+    name: fqn,
+    type: "entity",
+    rels: rels,
+    doc: doc
+};
+  (this.entities)[fqn] = entity;
+  rels.forEach((function(rel) {
+    return (function() {
+      switch (tokenValue_((rel)[0])) {
+        case "has": return __addRel(["list", ["quote", "."], "sym", "rel"], rel, fqn, index) /*logos:3*/ ;
+        case "rel": return __addRel((rel)[2], rel, fqn, index) /*logos:3*/ ;
+        }
+    })();
+  }));
+  return this;
 });
 
 var getStack = (function() {
@@ -168,6 +235,12 @@ var startScope = (function(name) {
 
 var finishScope = (function() {
   return getStack().shift();
+});
+
+var resetScope = (function() {
+  var oldScope = getScope();
+  finishScope();
+  return startScope(oldScope.name);
 });
 
 var scopeCount = (function() {
@@ -206,6 +279,25 @@ var findDef = (function(name) {
   return findInStack("context", name);
 });
 
+var findEntities = (function(form) {
+  /* Find all entitities assotiated with a token. */
+  return merge(compact(map(getTokenEntities(form), (function(__ArG_1) {
+    return findInStack("relations", __ArG_1);
+  }))));
+});
+
+var findSymbols = (function(entities) {
+  return merge(compact(map(entities, (function(__ArG_1) {
+    return findInStack("symbols", __ArG_1, closureScopeCount());
+  }))));
+});
+
+var dumpScopeLogos = (function() {
+  console.log("symbols", getScope().symbols);
+  console.log("entities", getScope().entities);
+  return console.log("relations", getScope().relations);
+});
+
 var findClosureDef = (function(name) {
   /* Lookup for a def inside root def. */
   return findInStack("context", name, closureScopeCount());
@@ -234,6 +326,12 @@ var dumpStack = (function() {
     return console.log(scope);
   }));
 });
+
+(function() {
+  var G__16 = metajs;
+  G__16.dumpStack = dumpStack;
+  G__16.getScope = getScope;
+})();
 
   
   // global scope for common macros like def, defn, etc;
@@ -369,19 +467,20 @@ var zip_ = (function() {
 // export symbols to exports if defined, otherwise to global object (window);
 
 (function() {
-  var G__15 = (function() {
+  var G__17 = (function() {
     if ((typeof(exports) !== "undefined")) {
       return exports;
     } else {
       return this;
     }
   })();
-  G__15.list__QUERY = list__QUERY;
-  G__15.cons = cons;
-  G__15.conj = conj;
-  G__15.map = map;
-  G__15.zip = zip;
-  G__15.zip_ = zip_;
+  G__17.list__QUERY = list__QUERY;
+  G__17.cons = cons;
+  G__17.conj = conj;
+  G__17.map = map;
+  G__17.zip = zip;
+  G__17.zip_ = zip_;
+  G__17.concat = concat;
 })();
 
     
@@ -434,6 +533,7 @@ var __tokenOrder = ["regex", "comment", "interpolatedString", "string", "number"
     istringArgWordRe = wordRe(istringArgRe),
     istringEscapeRe = /^\$\$$/,
     istringDebugRe = /^\$=/,
+    entityRe = /[A-za-z][\w-]*/,
     _readerFnArgs_;
 
 var token__QUERY = (function(item) {
@@ -469,6 +569,17 @@ var literal__QUERY = (function(item) {
 var symbol__QUERY = (function(token) {
   var value = tokenValue_(token);
   return ((literal__QUERY(value) && (constants.indexOf(value) === -1)) || ((typeof(value) === "string") && value.match(operandRe)));
+});
+
+var entity__QUERY = (function(token) {
+  var value = tokenValue_(token);
+  return (literal__QUERY(value) && (constants.indexOf(value) === -1) && (typeof(value) === "string") && value.match(entityRe));
+});
+
+var getTokenEntities = (function(token) {
+  return cons(tokenValue_(token), filter(getMeta(token), (function(__ArG_1) {
+    return entity__QUERY(__ArG_1);
+  })));
 });
 
 var valueLiteral__QUERY = (function(token) {
@@ -632,7 +743,7 @@ var readFn = (function(token, stream) {
     error("Nested #()s are not allowed.");
   }
   return (function() {
-    var G__16 = _readerFnArgs_;
+    var G__18 = _readerFnArgs_;
     return (function() {
       try {
         _readerFnArgs_ = {};
@@ -640,7 +751,7 @@ var readFn = (function(token, stream) {
     params = makeFnParams(_readerFnArgs_);
         return metajs.mergeSq(["fn", params, body]);
       } finally {
-        _readerFnArgs_ = G__16;
+        _readerFnArgs_ = G__18;
       }
     })();
   })();
@@ -693,6 +804,15 @@ var Token = (function(value, source) {
   this.source = source;
   this.meta = [];
   return this;
+});
+
+Token.prototype.inspect = (function(depth) {
+  var res = (this.value);
+  if ((this.meta.length === 0)) {
+    return this.value;
+  } else {
+    return (this.value + ":" + this.meta.join(":"));
+  }
 });
 
 Token.prototype.sourceStr = (function() {
@@ -820,9 +940,9 @@ var prnStr = (function() {
 });
 
 (function() {
-  var G__17 = metajs;
-  G__17.prnStr = prnStr;
-  G__17.prnStr_ = prnStr_;
+  var G__19 = metajs;
+  G__19.prnStr = prnStr;
+  G__19.prnStr_ = prnStr_;
 })();
 
     
@@ -917,8 +1037,8 @@ setScopeMacro("macrojs", null, (function(name) {
 }));
 
 (function() {
-  var G__18 = metajs;
-  G__18.stripDoubleQuotes = stripDoubleQuotes;
+  var G__20 = metajs;
+  G__20.stripDoubleQuotes = stripDoubleQuotes;
 })();
 
     
@@ -934,14 +1054,7 @@ var findFnSignature = (function(name) {
 var checkCall = (function(name, args) {
   var name_ = tokenValue_(name),
     expected = findFnSignature(name_);
-  var checked = (function() {
-    if ((name_ === "defmacro")) {
-      return args;
-    } else {
-      return checkCallParams(name, args, expected);
-    }
-  })();
-  return checked;
+  return checkCallParams(name, args, expected);
 });
 
 var callStr = (function(name, args) {
@@ -959,12 +1072,11 @@ var callStr = (function(name, args) {
 });
 
 var parseParams = (function(token, name, params, expected) {
-  var allowHints = ((name !== "defmacro") && (name !== "js"));
   var positional = [],
     hints = [],
     rest = [];
   params.forEach((function(param, i) {
-    if ((allowHints && hasMeta__QUERY(param))) {
+    if (hasMeta__QUERY(param)) {
       return hints.push(param);
     } else {
       if ((hints.length === 0)) {
@@ -974,7 +1086,7 @@ var parseParams = (function(token, name, params, expected) {
       }
     }
   }));
-  if (((typeof(expected) === "undefined") && (hints.length > 0) && allowHints)) {
+  if (((typeof(expected) === "undefined") && (hints.length > 0))) {
     lintUnknownHints(("Hints in unknown function call: " + callStr(name, hints)), token);
   }
   if ((hints.length !== Object.keys(hashMap(hints, (function(p) {
@@ -1017,7 +1129,7 @@ var checkCallParams = (function(fnToken, params, expected) {
     return (function() {
       switch (arg.presence) {
         case "required": // find missed but required arg from surrounding context or report error;
-        var val = resolveArg(arg);
+        var val = resolveArg(arg, fnToken);
         if (val) {
           return resolved.push(val);
         } else {
@@ -1068,9 +1180,48 @@ var checkCallParams = (function(fnToken, params, expected) {
   return resolved;
 });
 
-var resolveArg = (function(arg) {
-  if (findClosureDef(arg.name)) {
-    return arg.name;
+var entityResolve = (function(arg) {
+  /* Use entities assotiated with arg to make semantic transformation of symbols in the current lexical scope. */
+  var entities = findEntities(arg.token),
+    bound = filter(map(entities, (function(e) {
+    return {
+      entity: e,
+      symbols: findSymbols([e.name])
+};
+  })), (function(es) {
+    return (es.symbols.length > 0);
+  }));
+  //(when bound.length (log "entity-resolve" arg.name #"$=bound"));
+  return merge(map(bound, (function(es) {
+    return map(es.symbols, (function(__ArG_1) {
+      return es.entity.code(__ArG_1.name, ["quote", es.entity.token]);
+    }));
+  })));
+});
+
+var symbolResolve = (function(arg) {
+  /* Find in the current lexical scope symbols with same name or meta type as arg. */
+  return map(findSymbols(getTokenEntities(arg.token)), (function(__ArG_1) {
+    return __ArG_1.name;
+  }));
+});
+
+var resolveErrorMany = (function(arg, fnToken, forms) {
+  var name = arg.name,
+    fnName = tokenValue_(fnToken),
+    resolvers = map(forms, compileOne).join(", ");
+  dumpScopeLogos();
+  lintManyCandidates(("Too many candidates for " + name + " in " + fnName + ": " + resolvers + "."), fnToken);
+  return null;
+});
+
+var resolveArg = (function(arg, fnToken) {
+  var forms = concat(symbolResolve(arg) /*logos:1*/ , entityResolve(arg) /*logos:1*/ ),
+    name = arg.name;
+  if ((forms.length === 1)) {
+    return (forms)[0];
+  } else if ((forms.length > 1)) {
+    return resolveErrorMany(arg, fnToken, forms) /*logos:3*/ ;
   }
 });
 
@@ -1079,6 +1230,17 @@ var checkName = (function(name) {
     /* (warn "Unknown name" name) */
   }
 });
+
+setScopeMacro("entity", null, (function(name) {
+  var rels = Array.prototype.slice.call(arguments, 1, undefined);
+  var doc;
+  if (quoted__QUERY((rels)[0])) {
+    doc = ([(rels)[0], rels.slice(1)])[0];
+    rels = ([(rels)[0], rels.slice(1)])[1];
+  }
+  getScope().setEntity(name, rels, doc);
+  return undefined;
+}));
 
     
 var Fragment = (function(data, meta) {
@@ -1259,10 +1421,11 @@ var rawList = (function(forms) {
   var name = (forms)[0],
     jsName = jsSymbol(name),
     macro = findMacro(jsName);
+  // (check-call name (forms.slice 1));
   if ((typeof(name) === "undefined")) {
     return "null";
   } else if (macro) {
-    return macro.apply(this, checkCall(name, forms.slice(1)));
+    return macro.apply(this, forms.slice(1));
   } else {
     return findMacro("_call").apply(this, forms);
   }
@@ -1498,7 +1661,7 @@ var significantRaw__QUERY = (function(raw) {
 
 var compile = (function(forms) {
   return (function() {
-    var G__19 = _env_;
+    var G__21 = _env_;
     return (function() {
       try {
         _env_ = makeEnv();
@@ -1513,7 +1676,7 @@ var compile = (function(forms) {
         }));
         return join("", _env_.js);
       } finally {
-        _env_ = G__19;
+        _env_ = G__21;
       }
     })();
   })();
@@ -1521,7 +1684,7 @@ var compile = (function(forms) {
 
 var compileOne = (function(form) {
   return (function() {
-    var G__20 = _env_;
+    var G__22 = _env_;
     return (function() {
       try {
         _env_ = makeEnv();
@@ -1533,7 +1696,7 @@ var compileOne = (function(form) {
         })();
         return join("", _env_.js);
       } finally {
-        _env_ = G__20;
+        _env_ = G__22;
       }
     })();
   })();
@@ -1543,20 +1706,32 @@ var translate = (function(text) {
   // FIX: use *env*.lint-error-count;
   var prevErrorCount = lintErrorCount;
   return (function() {
-    var G__21 = compile(read(text));
+    var G__23 = compile(read(text));
     if ((lintErrorCount > prevErrorCount)) {
       throw (new LintError(lintReport(), (lintErrorCount - prevErrorCount)));
     }
-    return G__21;
+    return G__23;
   })();
 });
 
+var resetState = (function() {
+  /* Reset state of the root scope of the compiler and don't touch global scope. */
+  resetLint();
+  return resetScope();
+});
+
+setScopeMacro("include", null, (function(file) {
+  /* This macro depends on metajs.include that platform (node or browser) should implement. */
+  return withMeta({virtual: true}, cdata(metajs.include(evalExpr(file))));
+}));
+
 (function() {
-  var G__22 = metajs;
-  G__22.compile = compile;
-  G__22.translate = translate;
-  G__22.jsLiteral = jsLiteral;
-  G__22.jsSymbol = jsSymbol;
+  var G__24 = metajs;
+  G__24.compile = compile;
+  G__24.translate = translate;
+  G__24.jsLiteral = jsLiteral;
+  G__24.jsSymbol = jsSymbol;
+  G__24.resetState = resetState;
 })();
 
       
@@ -1790,7 +1965,7 @@ setScopeMacro("assertJs", null, (function(metajsCode, jsCode) {
 }));
 
 setScopeMacro("assertJs_", null, (function(metajsCode, jsPrefix) {
-  return metajs.mergeSq(["assertEq", metajs.mergeSq([metajs.mergeSq(["try", metajs.mergeSq([metajs.mergeSq(["metajs.translate", metajsCode]), ".trim"]), metajs.mergeSq(["catch", "e", metajs.mergeSq(["e.toString"])])]), ".indexOf", jsPrefix]), 0]);
+  return metajs.mergeSq(["assert", metajs.mergeSq(["!=", metajs.mergeSq([metajs.mergeSq(["try", metajs.mergeSq([metajs.mergeSq(["metajs.translate", metajsCode]), ".trim"]), metajs.mergeSq(["catch", "e", metajs.mergeSq(["e.toString"])])]), ".indexOf", jsPrefix]), -1])]);
 }));
 
         
@@ -1837,7 +2012,8 @@ var bindSet = (function(name, value) {
 var bindDef = (function(name, value) {
   getScope().setVars([{
     type: "var",
-    name: tokenValue_(name)
+    name: tokenValue_(name),
+    token: name
 }]);
   if ((typeof(value) === "undefined")) {
     return cdata(expr(name, "def"));
@@ -2609,10 +2785,6 @@ setScopeMacro("rest", null, (function(xs) {
 }));
 
 setScopeMacro("frest", null, (function(xs) {
-  return metajs.mergeSq([xs, ".slice", 1]);
-}));
-
-setScopeMacro("frest", null, (function(xs) {
   return metajs.mergeSq(["list", metajs.mergeSq(["first", xs]), metajs.mergeSq(["rest", xs])]);
 }));
 
@@ -2855,7 +3027,7 @@ setScopeMacro("arguments", null, (function() {
   }));
   
   var __debugArg = (function(arg) {
-    return ["str", wrapInDoubleQuotes((arg + "=")), arg];
+    return ["str", wrapInDoubleQuotes((arg + "=")), ["inspect", arg]];
   });
   
   var __fmtArg = (function(arg) {

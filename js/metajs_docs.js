@@ -5,13 +5,14 @@
     $run = $pre.find(".run");
     return $pre.find("code").text((function() {
       try {
-        metajs.resetLint();
+        metajs.resetState();
         return (function() {
           var G__1 = metajs.translate($mjs.val());
           $run.show();
           return G__1;
         })();
       } catch (e) {
+        console.log(e.stack);
         $run.hide();
         return (e.message + "\nPlease look at console's log and fix errors.");
       }
