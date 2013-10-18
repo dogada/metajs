@@ -2,7 +2,7 @@
 <p>Write on <strong>lisp</strong>. Compile to pure <strong>javascript</strong> without runtime dependencies.
 Enjoy compiler that can <strong>guess your thoughts</strong> and <strong>generate missed
 parts of code</strong>.</p>
-<h3>Logos-oriented programming language</h3>
+<h3>Knowledge-oriented programming language</h3>
 <p>MetaJS is yet another attempt to create better programming language for modern
 world. More about MetaJS background, why it was chosen Lisp-syntax and why it&#39;s
 compiled to Javascript, you can find on
@@ -13,10 +13,12 @@ protocol</a>.</p>
 in MetaJS and can recompile itself. Look at the <a href="http://metajs.coect.net/">interactive
 MetaJS-documentation</a> where you can try MetaJS without
 leaving your browser.</p>
-<p>Logos-oriented programming as opposed to object-oriented or functional one gives
+<p>Knowledge-oriented programming as opposed to object-oriented or functional one gives
 main priority to semantic models of the program instead of building blocks of
 the program (objects or functions). Each semantic model (in the form that
-compiler can understand) is called logos.</p>
+compiler can understand) is called <a href="http://en.wikipedia.org/wiki/Logos">logos</a>.</p>
+<p>You can find more information about semantic code transformations, examples of
+symbolic and entitative MetaJS to JavaScipt transformations in the <a href="http://metajs.coect.net/pdf/metajs_semantic_code_transformations.pdf">metajs_semantic_code_transformations.pdf</a>.</p>
 <h3>Seamless integration with Javascript</h3>
 <p>MetaJS is compiled to Javascript code without runtime dependencies and don&#39;t use
 own datastructures (like for example ClojureScript does). MetaJS uses native
@@ -63,7 +65,7 @@ D3 homepage:</p>
 parameter can be passed positionally or as keyword. In addition function can
 accept variable number of parameters that are accessible as list. Shortly syntax
 for keyword-only function parameters will be finalised.</p>
-<pre><code class="lang-lisp">;; &#39;a&#39; is required, &#39;b&#39; is required and associated with an entity named &#39;Thing&#39; defined in a logos
+<pre><code class="lang-lisp">;; &#39;a&#39; is required, &#39;b&#39; is required and associated with an entity &#39;Thing&#39;
 ;; &#39;c&#39; is optional, &#39;d&#39; is optional and has default value 2, &#39;more&#39; holds rest positional parameters
 (defn demo-fn (a b:Thing c:? d:2 &amp; more)
  (log a b c d more))
@@ -81,14 +83,6 @@ namespaces and integrate support of
 <a href="https://github.com/substack/node-browserify">Browserify</a>. You can see <a href="http://github.com/dogada/metajs/issues">full
 list</a> of planned changes and offer your
 own.</p>
-<h3>Credits</h3>
-<ul>
-<li>I learned a lot about Lisp from <a href="http://www.paulgraham.com/lisp.html">Paul
-Graham&#39;s articles</a>.</li>
-<li>I used syntax of <a href="http://www.clojure.org/">Clojure</a> as starting point for MetaJS syntax.</li>
-<li>Some ideas about implementing Lisp on top of Javascript are borrowed from <a href="https://github.com/clojure/clojurescript">ClojureScript</a>,
-<a href="https://github.com/jbr/sibilant">Sibilant</a> and <a href="https://github.com/santoshrajan/lispyscript">LispyScript</a>.</li>
-</ul>
 <h3>How to install and try MetaJS</h3>
 <p>Firstly, please install <a href="http://nodejs.org/download/">Node.js</a>.</p>
 <p>If you want  to install latest development version of MetaJS:</p>
