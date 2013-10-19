@@ -1,4 +1,10 @@
 (scoped
+ (defn init-repl ()
+   "Put all MetaJS symbols into root scope for better REPL."
+   (each-key key metajs
+             (log "init-repl" (keys metajs))
+             (set-in window key (get metajs key))))
+
  (defn translate ()
    (def $mjs ($ this)
      $pre ($mjs .parent .next)
@@ -32,8 +38,7 @@
 
  (defn make-toc ()
    ($ "h4" .each #(($ this) .attr "id" ($ this .text .toLowerCase .replace /\ /g "-"))))
- 
+
+ ($ init-repl)
  ($ init-examples)
  ($ make-toc))
-
-

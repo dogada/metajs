@@ -8,7 +8,7 @@ JS = $(MJS:.mjs=.js)
 ALL_MJS = $(shell find ./src ./test  -name "*.mjs" -not -name ".*" -printf "%f\n")
 LIB_MJS = src/metajs_node.mjs src/metajs_browser.mjs src/cli.mjs
 
-all: clean compile-all compile-docs test
+all: clean compile-all docs test
 
 compile:
 	metajs --bootstrap -o lib/ $(LIB_MJS)
@@ -21,11 +21,11 @@ compile-all: $(MJS)
 	@touch ./var/compile-all
 	@echo "New MetaJS compiler is born."
 
-compile-docs: compile-all
+docs: compile-all
 	metajs -o ./doc/src/files/js/ ./doc/src/files/mjs/metajs_docs.mjs
 	cp ./lib/metajs_browser.js ./doc/out/js/
 
-gh-pages: compile-docs
+gh-pages: docs
 	cd ./doc && docpad generate && cd -
 	git checkout gh-pages
 	cp -a ./doc/out/* .
@@ -59,4 +59,4 @@ init:
 %.js : %.mjs
 	metajs $< -o ./lib
 
-.PHONY: all compile test init clean jshint
+.PHONY: all compile test init clean jshint docs

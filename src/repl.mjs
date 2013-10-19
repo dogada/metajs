@@ -10,8 +10,10 @@
   (set-in context
           'module  module
           'require require)
-  (each-key key global
-            (set-in context key (get global key)))
+  ;; put all metajs and global symbols in repl context 
+  (each (obj) [global metajs]
+        (each-key key obj
+                  (set-in context key (get obj key))))
   context)
 
 (defn start-repl ()

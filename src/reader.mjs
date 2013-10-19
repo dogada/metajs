@@ -327,5 +327,5 @@
   (eval (apply prn-str* forms)))
 
 (export* metajs
-         prn-str prn-str*)
+         read prn-str prn-str*)
 
