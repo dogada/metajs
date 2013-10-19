@@ -1,4 +1,11 @@
 (function() {
+  var initRepl = (function() {
+    /* Put all MetaJS symbols into root scope for better REPL. */
+    return Object.keys(metajs).forEach((function(key) {
+      console.log("init-repl", Object.keys(metajs));
+      (window)[key] = (metajs)[key];
+    }));
+  });
   var translate = (function() {
     var $mjs = $(this),
     $pre = $mjs.parent().next(),
@@ -33,6 +40,7 @@
       return $(this).attr("id", $(this).text().toLowerCase().replace(/\ /g, "-"));
     }));
   });
+  $(initRepl);
   $(initExamples);
   return $(makeToc);
 })();
