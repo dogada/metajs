@@ -2,7 +2,6 @@
  (defn init-repl ()
    "Put all MetaJS symbols into root scope for better REPL."
    (each-key key metajs
-             (log "init-repl" (keys metajs))
              (set-in window key (get metajs key))))
 
  (defn translate ()

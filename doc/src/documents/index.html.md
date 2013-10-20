@@ -148,3 +148,5 @@ and [LOR](http://www.linux.org.ru/news/opensource/9546490).
 
 You can find more information about semantic code transformations, examples of
 symbolic and entitative MetaJS to JavaScipt transformations in the [metajs_semantic_code_transformations.pdf](/pdf/metajs_semantic_code_transformations.pdf).
+Please look also at the high-level MetaJS language overview
+[metajs_lisp.pdf](http://metajs.coect.net/pdf/metajs_lisp.pdf).
