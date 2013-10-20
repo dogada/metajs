@@ -3,11 +3,6 @@
   (if (list? signature) signature undefined))
 
 
-(defn check-call (name args)
-  (def name* (token-value* name)
-    expected (find-fn-signature name*))
-  (check-call-params name args expected))
-
 (defn call-str (name args)
   (str name "("
        (join " " (map args (fn (arg)
@@ -96,23 +91,30 @@
   (set rest (concat positional rest)
        resolved (concat resolved rest))
   (when (and (not allowed-rest) (not-empty? rest))
-    (lint-undeclared-rest (str "Found " rest.length " undeclared rest params in " (call-str name rest)) fn-token))
+    (lint-undeclared-rest (str "Found " rest.length " undeclared rest params in "
+                               (call-str name rest)) fn-token))
   resolved)
 
+(defn check-call (name args)
+  (def name* (token-value* name)
+    expected (find-fn-signature name*))
+  (check-call-params name args expected))
+
 (defn entity-resolve (arg)
-  "Use entities assotiated with arg to make semantic transformation of symbols in the current lexical scope."
+  "Use entities associated with arg to find substitution for missed argument."
   (def entities (find-entities arg.token)
     bound (filter (map entities (fn (e) {entity: e symbols: (find-symbols [e.name])}))
                   (fn (es) (not-empty? es.symbols))))
-  ;;(when bound.length (log "entity-resolve" arg.name #"$=bound"))
   (merge (map bound (fn (es)
-                      (map es.symbols #(es.entity.code (. % 'name) ['quote es.entity.token]))))))
+                      (map es.symbols #(es.entity.code (. % 'name)
+                                                       ['quote es.entity.token]))))))
 
 (defn symbol-resolve (arg)
-  "Find in the current lexical scope symbols with same name or meta type as arg."
+  "Find in the current lexical scope symbols with arg's name or meta type."
   (map (find-symbols (get-token-entities arg.token)) #(get % 'name)))
 
-(defn resolve-error-many (arg fn-token forms)
+(defn report-resolve-error (arg fn-token forms)
+  "Show all possible candidates for resolving the missed argument of a function."
   (def name arg.name
     fn-name (token-value* fn-token)
     resolvers ((map forms compile-one) .join ", "))
@@ -121,18 +123,21 @@
   null)
 
 (defn resolve-arg (arg fn-token)
+  "Replace missed argument of a function with a form or report an error."
   (def forms (concat (symbol-resolve) (entity-resolve))
     name arg.name)
   (if (contains-one? forms) (first forms)
-      (contains-many? forms) (resolve-error-many)))
+      (contains-many? forms) (report-resolve-error)))
+
+(defmacro entity (name & rels)
+  "Define entity in the current lexical scope."
+  (def doc "")
+  (when (quoted? (first rels))
+    (set [doc rels] (frest rels)))
+  ((get-scope) .set-entity name rels doc)
+  undefined)
 
 (defn check-name (name)
   (when (and (not-contains? name ".") (not (find-def name)))
     (comment warn "Unknown name" name)))
 
-(defmacro entity (name & rels)
-  (def doc)
-  (when (quoted? (first rels))
-    (set [doc rels] (frest rels)))
-  ((get-scope) .set-entity name rels doc)
-  undefined)

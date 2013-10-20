@@ -1,7 +1,7 @@
 # (: MetaJS)
 
 Write on **lisp**. Compile to pure **javascript** without runtime dependencies.
-Enjoy compiler that can **guess your thoughts** and **generate missed
+Enjoy compiler that can **guess your thoughts** and **generate intentionally missed
 parts of code**.
 
 ### Knowledge-oriented programming language
@@ -24,7 +24,7 @@ the program (objects or functions). Each semantic model (in the form that
 compiler can understand) is called [logos](http://en.wikipedia.org/wiki/Logos).
 
 You can find more information about semantic code transformations, examples of
-symbolic and entitative MetaJS to JavaScipt transformations in the [metajs_semantic_code_transformations.pdf](http://metajs.coect.net/pdf/metajs_semantic_code_transformations.pdf).
+symbolic and entitative MetaJS to JavaScipt transformations in the [metajs_semantic_code_transformations.pdf](http://metajs.coect.net/pdf/metajs_semantic_code_transformations.pdf). Please look also at the [high-level MetaJS language overview](http://metajs.coect.net/pdf/metajs_lisp.pdf).
 
 ### Seamless integration with Javascript
 
