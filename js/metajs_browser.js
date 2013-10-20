@@ -1052,12 +1052,6 @@ var findFnSignature = (function(name) {
   }
 });
 
-var checkCall = (function(name, args) {
-  var name_ = tokenValue_(name),
-    expected = findFnSignature(name_);
-  return checkCallParams(name, args, expected);
-});
-
 var callStr = (function(name, args) {
   return (name + "(" + join(" ", map(args, (function(arg) {
     if (hasMeta__QUERY(arg)) {
@@ -1181,8 +1175,14 @@ var checkCallParams = (function(fnToken, params, expected) {
   return resolved;
 });
 
+var checkCall = (function(name, args) {
+  var name_ = tokenValue_(name),
+    expected = findFnSignature(name_);
+  return checkCallParams(name, args, expected);
+});
+
 var entityResolve = (function(arg) {
-  /* Use entities assotiated with arg to make semantic transformation of symbols in the current lexical scope. */
+  /* Use entities associated with arg to find substitution for missed argument. */
   var entities = findEntities(arg.token),
     bound = filter(map(entities, (function(e) {
     return {
@@ -1192,7 +1192,6 @@ var entityResolve = (function(arg) {
   })), (function(es) {
     return (es.symbols.length > 0);
   }));
-  //(when bound.length (log "entity-resolve" arg.name #"$=bound"));
   return merge(map(bound, (function(es) {
     return map(es.symbols, (function(__ArG_1) {
       return es.entity.code(__ArG_1.name, ["quote", es.entity.token]);
@@ -1201,13 +1200,14 @@ var entityResolve = (function(arg) {
 });
 
 var symbolResolve = (function(arg) {
-  /* Find in the current lexical scope symbols with same name or meta type as arg. */
+  /* Find in the current lexical scope symbols with arg's name or meta type. */
   return map(findSymbols(getTokenEntities(arg.token)), (function(__ArG_1) {
     return __ArG_1.name;
   }));
 });
 
-var resolveErrorMany = (function(arg, fnToken, forms) {
+var reportResolveError = (function(arg, fnToken, forms) {
+  /* Show all possible candidates for resolving the missed argument of a function. */
   var name = arg.name,
     fnName = tokenValue_(fnToken),
     resolvers = map(forms, compileOne).join(", ");
@@ -1217,24 +1217,20 @@ var resolveErrorMany = (function(arg, fnToken, forms) {
 });
 
 var resolveArg = (function(arg, fnToken) {
+  /* Replace missed argument of a function with a form or report an error. */
   var forms = concat(symbolResolve(arg) /*logos:1*/ , entityResolve(arg) /*logos:1*/ ),
     name = arg.name;
   if ((forms.length === 1)) {
     return (forms)[0];
   } else if ((forms.length > 1)) {
-    return resolveErrorMany(arg, fnToken, forms) /*logos:3*/ ;
-  }
-});
-
-var checkName = (function(name) {
-  if (((name.indexOf(".") === -1) && !findDef(name))) {
-    /* (warn "Unknown name" name) */
+    return reportResolveError(arg, fnToken, forms) /*logos:3*/ ;
   }
 });
 
 setScopeMacro("entity", null, (function(name) {
+  /* Define entity in the current lexical scope. */
   var rels = Array.prototype.slice.call(arguments, 1, undefined);
-  var doc;
+  var doc = "";
   if (quoted__QUERY((rels)[0])) {
     doc = ([(rels)[0], rels.slice(1)])[0];
     rels = ([(rels)[0], rels.slice(1)])[1];
@@ -1242,6 +1238,12 @@ setScopeMacro("entity", null, (function(name) {
   getScope().setEntity(name, rels, doc);
   return undefined;
 }));
+
+var checkName = (function(name) {
+  if (((name.indexOf(".") === -1) && !findDef(name))) {
+    /* (warn "Unknown name" name) */
+  }
+});
 
     
 var Fragment = (function(data, meta) {
