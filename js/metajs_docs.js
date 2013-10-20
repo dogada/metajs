@@ -2,7 +2,6 @@
   var initRepl = (function() {
     /* Put all MetaJS symbols into root scope for better REPL. */
     return Object.keys(metajs).forEach((function(key) {
-      console.log("init-repl", Object.keys(metajs));
       (window)[key] = (metajs)[key];
     }));
   });
