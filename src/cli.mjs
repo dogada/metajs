@@ -35,10 +35,14 @@
       program.output (output-js source-path js-str)
       (log js-str)))
 
+(defn resolve-file-name (name)
+  (if (name.match /^\/.+/) name
+      (path.join (process.cwd) name)))
+
 (defn process-files (fnames)
-  (each (fname) fnames
+  (each (name) fnames
         (try
-          (process-file (path.join (process.cwd) fname))
+          (process-file (resolve-file-name))
           (catch e
               (log e.stack)
               (if (instanceof? e metajs.LintError) (metajs.log-lint-report)

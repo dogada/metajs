@@ -45,6 +45,9 @@ testjs: compile-all
 jshint: compile-all
 	jshint ./lib/metajs_node.js
 
+tags:
+	@ctags-exuberant -e -R ./
+
 check: clean compile
 	metajs -x test/index.mjs
 
