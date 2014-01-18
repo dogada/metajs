@@ -232,12 +232,19 @@
    this.column column)
   this)
 
-(defn Token (value source:?)
+(defn Token (value source:? meta:[])
   (set
    this.value value
    this.source source
-   this.meta [])
+   this.meta meta)
   this)
+
+(defn Token.prototype.valueOf ()
+  this.value)
+
+(defn Token.prototype.toString ()
+  this.value)
+
 
 (defn Token.prototype.inspect (depth)
   (def res (str this.value))
@@ -257,6 +264,16 @@
 
 (defn Token.prototype.append-hint (hint)
   (this.meta.push hint))
+
+(defn Token.prototype.clone-with-ns (parent)
+  (new Token (str (token-value parent) "." this.value) this.source this.meta))
+
+(defn Token.prototype.clone (value:?)
+  (new Token (or value this.value) this.source this.meta))
+
+(defn clone-form (form value:?)
+  (if (token? form) (form.clone value)
+      (or value form)))
 
 (defn Tokenizer (text re)
   (set-in this

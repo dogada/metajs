@@ -14,12 +14,13 @@
   (set obj.meta meta)
   obj)
 
-(defn cdata (& args)
-  (new Fragment (map args cdata-arg)))
-
 (defn cdata-arg (arg)
   (if (list? arg) (throw (str "Lists as cdata arg"))
       arg))
+
+(defn cdata (& args)
+  (new Fragment (map args cdata-arg)))
+
 
 (defn interpose (sep values)
   (apply cdata (slice (merge (map values
@@ -27,9 +28,6 @@
 
 (defn cdata-map (xs func)
   (apply cdata (map xs func)))
-
-(defn cdata-stmts (forms)
-  (cdata-map forms stmt))
 
 (defmacro js (template & args)
   (def stripped (strip-double-quotes template)
@@ -183,5 +181,7 @@
   (set-raw-ctx 'last-stmt)
   (raw form))
 
+(defn cdata-stmts (forms)
+  (cdata-map forms stmt))
 
 (set-in metajs 'raw raw)

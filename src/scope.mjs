@@ -46,22 +46,27 @@
 (defn make-rel-fn (code)
   (eval (compile-one `(fn (sym rel) ~code))))
 
-(defn -add-rel (code rel fqn index)
+(defn -add-rel (code rel fqn index extra:?)
   (def rel-fn (make-rel-fn))
   (each (target) (-rel-targets)
         (-add-provider (token-value* target)
                        {name: fqn
+                        type: (first rel)
                         code: rel-fn
-                        token: target})))
+                        token: target
+                        extra: extra
+                        })))
 
 (defn Scope.prototype.set-entity (name rels doc:?)
   (def fqn (token-value* name)
     index this.relations
-    entity {name: fqn type: 'entity rels: rels doc: doc})
+    entity {name: fqn type: 'entity rels: rels doc: doc}
+    get-code ['list ['quote "."] 'sym 'rel])
   (set-in this.entities fqn entity)
   (each (rel) rels
         (switch (token-value* (first rel))
-                'has (-add-rel ['list ['quote "."] 'sym 'rel])
+                'has (-add-rel get-code)
+                'fn (-add-rel get-code extra: (transform-args (rel @2)))
                 'rel (-add-rel (rel @2))))
   this)
 

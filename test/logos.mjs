@@ -95,7 +95,6 @@
 
 
 (entity nothing)
-
 (entity null "more than nothing")
 
 (entity rectangle
@@ -145,3 +144,34 @@
           (assert-eq (column-volume height:height) 60))
      (let figure:circle {x:0 y:0 radius:5}
           (assert-eq (column-volume) 393)))
+
+;;; function parameters get from $scope via entities relations
+(let $scope {x:1 y:2 z:3 data: {value: 10 inner: {x:100}}}
+     (entity $scope (has [x y z data]))
+     (defn add (x y)
+       (+ x y))
+     (assert-eq (add) 3)
+     (assert-eq (add 10) 12)
+     (assert-eq (add 5 6) 11)
+     (assert-eq (add x y) 3)
+     (assert-eq (add y z) 5)
+     (assert-eq (add z 2) 5)
+     (assert-eq (add 3 data.value) 13)
+     (assert-eq (add 1 data.inner.x) 101)
+     (assert-eq (add data.value data.inner.x) 110))
+
+;;; function add, signature and parameters get from $scope
+(let $scope {x:1 y:2 z:3 data: {value: 10 inner: {x:100}}
+             add: (fn (x y) (+ x y))}
+     (entity $scope
+             (has [x y z data:dict])
+             (fn add (x y)))
+     (assert-eq (add) 3)
+     (assert-eq (add 10) 12)
+     (assert-eq (add 5 6) 11)
+     (assert-eq (add x y) 3)
+     (assert-eq (add y z) 5)
+     (assert-eq (add z 2) 5)
+     (assert-eq (add 3 data.value) 13)
+     (assert-eq (add 1 data.inner.x) 101)
+     (assert-eq (add data.value data.inner.x) 110))

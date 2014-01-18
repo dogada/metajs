@@ -11,10 +11,16 @@
         (set-scope-macro js-name args macro)
         undefined)))
 
+(defn get-fn-signature (verified)
+  (def signature (or verified.def (and verified.entity verified.entity.extra)))
+  (if (list? signature) signature undefined))
+
 (defmacro *call (fn-name & args)
   "Internal macro. Generate string with function call."
-  (def tname (raw fn-name)
-    resolved-args (check-call fn-name args)
+  (def verified (verify-form fn-name fn-name)
+    tname (raw verified.form)
+    signature (get-fn-signature verified)
+    resolved-args (check-call-params fn-name args signature)
     resolved (- resolved-args.length args.length))
   (cdata tname
          "(" (interpose ", " (map resolved-args #(expr %))) ")"

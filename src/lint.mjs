@@ -71,8 +71,12 @@
 (defn lint-duplicated-hints (message form)
   (lint-error 5))
 
-(defn lint-many-candidates (message form)
-  (lint-error 6))
+(defn lint-multi-resolve (message form fatal:true)
+  (if fatal (lint-error 6)
+      (lint-warn 6)))
+
+(defn lint-undefined (message form)
+  (lint-warn 7))
 
 (export* metajs
          LintError

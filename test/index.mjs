@@ -29,6 +29,7 @@
 (include "./hook.mjs")
 (include "./yield.mjs")
 (include "./format.mjs")
+(include "./compiler.mjs")
 
 (include "./last.mjs")
 

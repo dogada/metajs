@@ -1,8 +1,3 @@
-(defn find-fn-signature (name)
-  (def signature (find-def name))
-  (if (list? signature) signature undefined))
-
-
 (defn call-str (name args)
   (str name "("
        (join " " (map args (fn (arg)
@@ -54,7 +49,7 @@
              (do
                ;; find missed but required arg from surrounding context or report error
                (def val (resolve-arg arg fn-token))
-               (if val (resolved.push val)
+               (if val (resolved.push val.form)
                    (lint-missed-required-arg (str arg.name " is required for " name) fn-token)))
              'optional
              (when (or keyword-count (not-empty? hints) (not-empty? rest))
@@ -84,7 +79,7 @@
                 ;; keyword argumets always ignore params passed positionally
                 (if (= arg.presence 'keyword)
                   (resolved.push (last arg.meta))
-                  (resolved.push (positional.shift))))
+                  (resolved.push (verify-form (positional.shift) fn-token @form))))
               (resolve-blank arg)))))
   (when (not-empty? hints)
     (syntax-error (str "Unsupported hints: " (call-str name hints)) fn-token))
@@ -95,39 +90,35 @@
                                (call-str name rest)) fn-token))
   resolved)
 
-(defn check-call (name args)
-  (def name* (token-value* name)
-    expected (find-fn-signature name*))
-  (check-call-params name args expected))
-
-(defn entity-resolve (arg)
+(defn entity-resolve (form)
   "Use entities associated with arg to find substitution for missed argument."
-  (def entities (find-entities arg.token)
+  (def entities (find-entities form)
     bound (filter (map entities (fn (e) {entity: e symbols: (find-symbols [e.name])}))
                   (fn (es) (not-empty? es.symbols))))
   (merge (map bound (fn (es)
-                      (map es.symbols #(es.entity.code (. % 'name)
-                                                       ['quote es.entity.token]))))))
+                      (map es.symbols #(hash 'form (es.entity.code (. % 'name)
+                                                                  ['quote es.entity.token])
+                                             entity es.entity))))))
 
-(defn symbol-resolve (arg)
+(defn symbol-resolve (form)
   "Find in the current lexical scope symbols with arg's name or meta type."
-  (map (find-symbols (get-token-entities arg.token)) #(get % 'name)))
+  (map (find-symbols (get-token-entities form)) #(hash form (get % 'name))))
 
-(defn report-resolve-error (arg fn-token forms)
+(defn report-resolve-error (form parent forms fatal)
   "Show all possible candidates for resolving the missed argument of a function."
-  (def name arg.name
-    fn-name (token-value* fn-token)
-    resolvers ((map forms compile-one) .join ", "))
+  (def resolvers ((map forms compile-one) .join ", "))
   (dump-scope-logos)
-  (lint-many-candidates #"Too many candidates for $name in $fn-name: $resolvers." fn-token)
+  (lint-multi-resolve #"Too many candidates for $form in $parent: $resolvers." parent)
   null)
 
-(defn resolve-arg (arg fn-token)
+(defn resolve-form (form parent fatal:true)
   "Replace missed argument of a function with a form or report an error."
-  (def forms (concat (symbol-resolve) (entity-resolve))
-    name arg.name)
+  (def forms (concat (symbol-resolve) (entity-resolve)))
   (if (contains-one? forms) (first forms)
       (contains-many? forms) (report-resolve-error)))
+
+(defn resolve-arg (arg fn-token fatal:true)
+  (resolve-form arg.token fn-token))
 
 (defmacro entity (name & rels)
   "Define entity in the current lexical scope."
@@ -137,7 +128,25 @@
   ((get-scope) .set-entity name rels doc)
   undefined)
 
-(defn check-name (name)
-  (when (and (not-contains? name ".") (not (find-def name)))
-    (comment warn "Unknown name" name)))
+
+(defn verify-name (name parent)
+  "Verify that name is defined or resolve it or print warning."
+  (def parts (name .valueOf .split ".")
+    head (first parts)
+    tail (rest parts)
+    adef (find-def head)
+    main (if (= head "this") {form: name}
+             adef {form: name def: adef}
+             (resolve-form head parent fatal:false)))
+  (when-not main
+    (lint-undefined #"Undefined $name inside $parent." parent))
+  ;; TODO: check tail validness
+  (if (and main tail.length main.entity)
+    (set main.form (concat ["." main.form] (map tail #(list 'quote %)))))
+  (or main {form: name}))
+
+
+(defn verify-form (form parent)
+  (if (symbol? form) (verify-name form)
+      {form: form})) 
 

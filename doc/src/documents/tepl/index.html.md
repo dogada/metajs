@@ -8,8 +8,6 @@ title: 'Translate Eval Print Loop (TEPL)'
 translated Javascript code on the right.
 
 ```
-;; Type some MetaJS code here
-
 
 ```
 

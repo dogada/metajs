@@ -40,6 +40,7 @@
       (or (number? raw) (boolean? raw)) (push env.js raw)
       (token? raw) (write-token raw)
       (fragment? raw) (map raw.data #(write-raw % env))
+      (undefined? raw) 0
       (throw (str "Unknown raw, type: " (typeof raw) ", value: " raw "."))))
 
 
