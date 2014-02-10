@@ -139,7 +139,7 @@
              adef {form: name def: adef}
              (resolve-form head parent fatal:false)))
   (when-not main
-    (lint-undefined #"Undefined $name inside $parent." parent))
+    (lint-undefined #"Undefined $name." name))
   ;; TODO: check tail validness
   (if (and main tail.length main.entity)
     (set main.form (concat ["." main.form] (map tail #(list 'quote %)))))
