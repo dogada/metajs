@@ -1,3 +1,6 @@
+// common extensions;
+
+
 (function() {
   var metajs = {};
   window.metajs = metajs;
@@ -7,6 +10,9 @@
   var pr = (function(x) {
     return console.log(x);
   });
+  // common runtime functions;
+
+
 var error = (function(x) {
   throw (new Error(x));
 });
@@ -117,8 +123,17 @@ var lintDuplicatedHints = (function(message, form) {
   return lintError(5, message, form) /*logos:2*/ ;
 });
 
-var lintManyCandidates = (function(message, form) {
-  return lintError(6, message, form) /*logos:2*/ ;
+var lintMultiResolve = (function(message, form, fatal) {
+  fatal = ((typeof(fatal) === "undefined") ? true : fatal);
+  if (fatal) {
+    return lintError(6, message, form) /*logos:2*/ ;
+  } else {
+    return lintWarn(6, message, form) /*logos:2*/ ;
+  }
+});
+
+var lintUndefined = (function(message, form) {
+  return lintWarn(7, message, form) /*logos:2*/ ;
 });
 
 (function() {
@@ -176,6 +191,14 @@ Scope.prototype.setVars = (function(vars) {
   return this;
 });
 
+var addScopeSymbol = (function(sym) {
+  return getScope().setVars([{
+    type: "var",
+    name: sym.toString(),
+    token: sym
+}]);
+});
+
 var __relTargets = (function(rel) {
   var targets = (rel)[1];
   if (listLiteral__QUERY(targets)) {
@@ -191,13 +214,15 @@ var makeRelFn = (function(code) {
   return eval(compileOne(metajs.mergeSq(["fn", metajs.mergeSq(["sym", "rel"]), code])));
 });
 
-var __addRel = (function(code, rel, fqn, index) {
+var __addRel = (function(code, rel, fqn, index, extra) {
   var relFn = makeRelFn(code) /*logos:1*/ ;
   return __relTargets(rel) /*logos:1*/ .forEach((function(target) {
     return __addProvider(tokenValue_(target), {
       name: fqn,
+      type: (rel)[0],
       code: relFn,
-      token: target
+      token: target,
+      extra: extra
 }, index) /*logos:1*/ ;
   }));
 });
@@ -210,12 +235,14 @@ Scope.prototype.setEntity = (function(name, rels, doc) {
     type: "entity",
     rels: rels,
     doc: doc
-};
+},
+    getCode = ["list", ["quote", "."], "sym", "rel"];
   (this.entities)[fqn] = entity;
   rels.forEach((function(rel) {
     return (function() {
       switch (tokenValue_((rel)[0])) {
-        case "has": return __addRel(["list", ["quote", "."], "sym", "rel"], rel, fqn, index) /*logos:3*/ ;
+        case "has": return __addRel(getCode, rel, fqn, index) /*logos:3*/ ;
+        case "fn": return __addRel(getCode, rel, fqn, index, transformArgs((rel)[2])) /*logos:3*/ ;
         case "rel": return __addRel((rel)[2], rel, fqn, index) /*logos:3*/ ;
         }
     })();
@@ -303,13 +330,6 @@ var findClosureDef = (function(name) {
   return findInStack("context", name, closureScopeCount());
 });
 
-var findMacro = (function(name) {
-  var table = findMacroTable(name),
-    macro = (table && (table)[name]);
-  /* (log "find-macro" name (bool table)) */
-  return macro;
-});
-
 var findMacroTable = (function(name) {
   var table = {},
     depth = 0;
@@ -318,6 +338,13 @@ var findMacroTable = (function(name) {
     ((depth)++);
   }
   return ((table)[name] ? table : undefined);
+});
+
+var findMacro = (function(name) {
+  var table = findMacroTable(name),
+    macro = (table && (table)[name]);
+  /* (log "find-macro" name (bool table)) */
+  return macro;
 });
 
 var dumpStack = (function() {
@@ -343,11 +370,6 @@ var list__QUERY = (function(x) {
   return (x && ((x).constructor.name === "Array"));
 });
 
-var list__QUERY = (function(x) {
-  /* In MetaJS list is Javascript's native array. */
-  return (x && ((x).constructor.name === "Array"));
-});
-
 var concat = (function(ls) {
   /* Combine several lists into one. Atoms wrapped into lists before appending. */
   var xs = Array.prototype.slice.call(arguments, 1, undefined);
@@ -360,7 +382,7 @@ var cons = (function() {
   (function(p0, p1) {
     var evaluated = (p0 && p1),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/runtime.mjs:15:16",
+      "path": "/home/dogada/projects/MJS/src/runtime.mjs:11:16",
       "assertion": "(and (>= xs.length 2) (list? (last xs)))",
       "quotedParams": ["(>= xs.length 2)", "(list? (last xs))"],
       "resolvedParams": [p0, p1]
@@ -498,7 +520,7 @@ var tokens = {
   string: /\"(([^\"]|(\\\"))*[^\\])?\"/,
   number: /-?[0-9][0-9.,]*/,
   special: /['`~#]?/,
-  literal: /[@\-]?[\$\*\.\w][\*\.\w-]*(\?|!)?/,
+  literal: /[@\-]?[\$\*\.\w][\$\*\.\w-]*(\?|!)?/,
   operand: /[\?><=!\+\/\*\-]+/,
   atIndex: /@\d+/,
   fnArg: /%[1-9&$]?/,
@@ -526,7 +548,7 @@ var __tokenOrder = ["regex", "comment", "interpolatedString", "string", "number"
   return ("(" + (tokens)[__ArG_1].source + ")");
 }))),
     jsIdRe = /^[a-zA-Z_]\w*$/,
-    literalRe = /^[@\-]?[\$\*\.\w][\*\.\w-]*(\?|!)?$/,
+    literalRe = /^[@\-]?[\$\*\.\w][\$\*\.\w-]*(\?|!)?$/,
     operandRe = wordRe(tokens.operand),
     constants = ["true", "false", "null", "undefined"],
     istringArgRe = /(\$\$|\$=?[a-zA-Z][\w-]*|\$=?\(.*\))/,
@@ -713,6 +735,17 @@ var readUnquote = (function(token, stream) {
   }
 });
 
+var makeParam = (function(id) {
+  /* Functions defined with #() can't be nested, so it safe don't use (gensym) here. */
+  return (function() {
+    switch (id) {
+      case "&": return "__ArG_more";
+      case "$": return "arguments[arguments.length - 1]";
+      default: return ("__ArG_" + id);
+      }
+  })();
+});
+
 var makeFnParams = (function(args) {
   var params = [],
     ids = Object.keys(args),
@@ -725,17 +758,6 @@ var makeFnParams = (function(args) {
     params.push("&", makeParam("&"));
   }
   return params;
-});
-
-var makeParam = (function(id) {
-  /* Functions defined with #() can't be nested, so it safe don't use (gensym) here. */
-  return (function() {
-    switch (id) {
-      case "&": return "__ArG_more";
-      case "$": return "arguments[arguments.length - 1]";
-      default: return ("__ArG_" + id);
-      }
-  })();
 });
 
 var readFn = (function(token, stream) {
@@ -799,11 +821,20 @@ var Source = (function(path, line, column) {
   return this;
 });
 
-var Token = (function(value, source) {
+var Token = (function(value, source, meta) {
+  meta = ((typeof(meta) === "undefined") ? [] : meta);
   this.value = value;
   this.source = source;
-  this.meta = [];
+  this.meta = meta;
   return this;
+});
+
+Token.prototype.valueOf = (function() {
+  return this.value;
+});
+
+Token.prototype.toString = (function() {
+  return this.value;
 });
 
 Token.prototype.inspect = (function(depth) {
@@ -835,6 +866,22 @@ Token.prototype.slice = (function(start, end) {
 
 Token.prototype.appendHint = (function(hint) {
   return this.meta.push(hint);
+});
+
+Token.prototype.cloneWithNs = (function(parent) {
+  return (new Token((tokenValue(parent) + "." + this.value), this.source, this.meta));
+});
+
+Token.prototype.clone = (function(value) {
+  return (new Token((value || this.value), this.source, this.meta));
+});
+
+var cloneForm = (function(form, value) {
+  if (token__QUERY(form)) {
+    return form.clone(value);
+  } else {
+    return (value || form);
+  }
 });
 
 var Tokenizer = (function(text, re) {
@@ -947,30 +994,8 @@ var prnStr = (function() {
 })();
 
     
-setScopeMacro("syntaxQuote", null, (function(form) {
-  if (list__QUERY(form)) {
-    return (function() {
-      switch (tokenValue_((form)[0])) {
-        case "unquote": return jsQuote((form)[1]);
-        case "unquote-splicing": return ["list", "\"unquote-splicing\"", jsQuote((form)[1])];
-        default: return cons("metajs.mergeSq", [cons("list", map(form, findMacro("syntaxQuote")))]);
-        }
-    })();
-  } else {
-    return quote_(form);
-  }
-}));
-
 var wrapInDoubleQuotes = (function(x) {
   return ("\"" + x + "\"");
-});
-
-var stripDoubleQuotes = (function(x) {
-  if (quoted__QUERY(x)) {
-    return x.slice(1, -1);
-  } else {
-    return x;
-  }
 });
 
 var escapeJs = (function(x) {
@@ -979,6 +1004,14 @@ var escapeJs = (function(x) {
 
 var escapeJsQuotes = (function(x) {
   return x.replace(/\\\"/g, "\\\\\"").replace(/\"/g, "\\\"");
+});
+
+var stripDoubleQuotes = (function(x) {
+  if (quoted__QUERY(x)) {
+    return x.slice(1, -1);
+  } else {
+    return x;
+  }
 });
 
 var jsQuote = (function(form) {
@@ -993,6 +1026,20 @@ var jsQuote = (function(form) {
     }
   }
 });
+
+setScopeMacro("syntaxQuote", null, (function(form) {
+  if (list__QUERY(form)) {
+    return (function() {
+      switch (tokenValue_((form)[0])) {
+        case "unquote": return jsQuote((form)[1]);
+        case "unquote-splicing": return ["list", "\"unquote-splicing\"", jsQuote((form)[1])];
+        default: return cons("metajs.mergeSq", [cons("list", map(form, findMacro("syntaxQuote")))]);
+        }
+    })();
+  } else {
+    return quote_(form);
+  }
+}));
 
 setScopeMacro("quote", null, (function(x) {
   return quote_(x);
@@ -1042,16 +1089,7 @@ setScopeMacro("macrojs", null, (function(name) {
   G__20.stripDoubleQuotes = stripDoubleQuotes;
 })();
 
-    
-var findFnSignature = (function(name) {
-  var signature = findDef(name);
-  if (list__QUERY(signature)) {
-    return signature;
-  } else {
-    return undefined;
-  }
-});
-
+      
 var callStr = (function(name, args) {
   return (name + "(" + join(" ", map(args, (function(arg) {
     if (hasMeta__QUERY(arg)) {
@@ -1126,7 +1164,7 @@ var checkCallParams = (function(fnToken, params, expected) {
         case "required": // find missed but required arg from surrounding context or report error;
         var val = resolveArg(arg, fnToken);
         if (val) {
-          return resolved.push(val);
+          return resolved.push(val.form);
         } else {
           return lintMissedRequiredArg((arg.name + " is required for " + name), fnToken);
         }
@@ -1157,7 +1195,7 @@ var checkCallParams = (function(fnToken, params, expected) {
         if ((arg.presence === "keyword")) {
           return resolved.push((arg.meta)[(arg.meta.length - 1)]);
         } else {
-          return resolved.push(positional.shift());
+          return resolved.push(verifyForm(positional.shift(), fnToken).form);
         }
       } else {
         return resolveBlank(arg);
@@ -1175,15 +1213,9 @@ var checkCallParams = (function(fnToken, params, expected) {
   return resolved;
 });
 
-var checkCall = (function(name, args) {
-  var name_ = tokenValue_(name),
-    expected = findFnSignature(name_);
-  return checkCallParams(name, args, expected);
-});
-
-var entityResolve = (function(arg) {
+var entityResolve = (function(form) {
   /* Use entities associated with arg to find substitution for missed argument. */
-  var entities = findEntities(arg.token),
+  var entities = findEntities(form),
     bound = filter(map(entities, (function(e) {
     return {
       entity: e,
@@ -1194,37 +1226,43 @@ var entityResolve = (function(arg) {
   }));
   return merge(map(bound, (function(es) {
     return map(es.symbols, (function(__ArG_1) {
-      return es.entity.code(__ArG_1.name, ["quote", es.entity.token]);
+      return {
+        "form": es.entity.code(__ArG_1.name, ["quote", es.entity.token]),
+        entity: es.entity
+};
     }));
   })));
 });
 
-var symbolResolve = (function(arg) {
+var symbolResolve = (function(form) {
   /* Find in the current lexical scope symbols with arg's name or meta type. */
-  return map(findSymbols(getTokenEntities(arg.token)), (function(__ArG_1) {
-    return __ArG_1.name;
+  return map(findSymbols(getTokenEntities(form)), (function(__ArG_1) {
+    return {form: __ArG_1.name};
   }));
 });
 
-var reportResolveError = (function(arg, fnToken, forms) {
+var reportResolveError = (function(form, parent, forms, fatal) {
   /* Show all possible candidates for resolving the missed argument of a function. */
-  var name = arg.name,
-    fnName = tokenValue_(fnToken),
-    resolvers = map(forms, compileOne).join(", ");
+  var resolvers = map(forms, compileOne).join(", ");
   dumpScopeLogos();
-  lintManyCandidates(("Too many candidates for " + name + " in " + fnName + ": " + resolvers + "."), fnToken);
+  lintMultiResolve(("Too many candidates for " + form + " in " + parent + ": " + resolvers + "."), parent);
   return null;
 });
 
-var resolveArg = (function(arg, fnToken) {
+var resolveForm = (function(form, parent, fatal) {
   /* Replace missed argument of a function with a form or report an error. */
-  var forms = concat(symbolResolve(arg) /*logos:1*/ , entityResolve(arg) /*logos:1*/ ),
-    name = arg.name;
+  fatal = ((typeof(fatal) === "undefined") ? true : fatal);
+  var forms = concat(symbolResolve(form) /*logos:1*/ , entityResolve(form) /*logos:1*/ );
   if ((forms.length === 1)) {
     return (forms)[0];
   } else if ((forms.length > 1)) {
-    return reportResolveError(arg, fnToken, forms) /*logos:3*/ ;
+    return reportResolveError(form, parent, forms, fatal) /*logos:4*/ ;
   }
+});
+
+var resolveArg = (function(arg, fnToken, fatal) {
+  fatal = ((typeof(fatal) === "undefined") ? true : fatal);
+  return resolveForm(arg.token, fnToken);
 });
 
 setScopeMacro("entity", null, (function(name) {
@@ -1239,13 +1277,72 @@ setScopeMacro("entity", null, (function(name) {
   return undefined;
 }));
 
-var checkName = (function(name) {
-  if (((name.indexOf(".") === -1) && !findDef(name))) {
-    /* (warn "Unknown name" name) */
+setScopeMacro("declareFn", null, (function() {
+  /* Declare an function on the current scope. */
+  var pairs = Array.prototype.slice.call(arguments, 0, undefined);
+  var declareOne = (function(sym, args) {
+    return getScope().setFn(sym, transformArgs(args));
+  });
+  bulkMap(pairs, (function(target, args) {
+    if (list__QUERY(target)) {
+      return target.slice(1).forEach((function(sym) {
+        return declareOne(sym, args) /*logos:2*/ ;
+      }));
+    } else {
+      return declareOne(target, args) /*logos:1*/ ;
+    }
+  }));
+  return undefined;
+}));
+
+setScopeMacro("declare", null, (function() {
+  /* Declare some symbols in the current scope. */
+  var symbols = Array.prototype.slice.call(arguments, 0, undefined);
+  symbols.forEach((function(sym) {
+    return addScopeSymbol(sym);
+  }));
+  return undefined;
+}));
+
+var verifyName = (function(name, parent) {
+  /* Verify that name is defined or resolve it or print warning. */
+  var parts = name.valueOf().split("."),
+    head = (parts)[0],
+    tail = parts.slice(1),
+    adef = findDef(head),
+    main = (function() {
+    if ((head === "this")) {
+      return {form: name};
+    } else if (adef) {
+      return {
+        form: name,
+        def: adef
+};
+    } else {
+      return resolveForm(head, parent, false);
+    }
+  })();
+  if (!main) {
+    lintUndefined(("Undefined " + name + "."), name);
+  }
+  // TODO: check tail validness;
+  if ((main && tail.length && main.entity)) {
+    main.form = concat([".", main.form], map(tail, (function(__ArG_1) {
+      return ["quote", __ArG_1];
+    })));
+  }
+  return (main || {form: name});
+});
+
+var verifyForm = (function(form, parent) {
+  if (symbol__QUERY(form)) {
+    return verifyName(form, parent) /*logos:1*/ ;
+  } else {
+    return {form: form};
   }
 });
 
-    
+        
 var Fragment = (function(data, meta) {
   this.data = data;
   this.meta = meta;
@@ -1266,17 +1363,17 @@ var withMeta = (function(meta, obj) {
   return obj;
 });
 
-var cdata = (function() {
-  var args = Array.prototype.slice.call(arguments, 0, undefined);
-  return (new Fragment(map(args, cdataArg)));
-});
-
 var cdataArg = (function(arg) {
   if (list__QUERY(arg)) {
     throw (new Error(("Lists as cdata arg")));
   } else {
     return arg;
   }
+});
+
+var cdata = (function() {
+  var args = Array.prototype.slice.call(arguments, 0, undefined);
+  return (new Fragment(map(args, cdataArg)));
 });
 
 var interpose = (function(sep, values) {
@@ -1287,10 +1384,6 @@ var interpose = (function(sep, values) {
 
 var cdataMap = (function(xs, func) {
   return cdata.apply(this, map(xs, func));
-});
-
-var cdataStmts = (function(forms) {
-  return cdataMap(forms, stmt);
 });
 
 setScopeMacro("js", null, (function(template) {
@@ -1374,7 +1467,7 @@ var processHooks = (function(xs) {
     (function(p0) {
       var evaluated = (p0.length > 1),
     ctx = {
-        "path": "/home/dogada/projects/MJS/src/raw.mjs:92:28",
+        "path": "/home/dogada/projects/MJS/src/raw.mjs:90:28",
         "assertion": "(contains-many? xs)",
         "quotedParams": ["xs"],
         "resolvedParams": [p0]
@@ -1390,7 +1483,7 @@ var processHooks = (function(xs) {
     (function(p0) {
       var evaluated = !p0,
     ctx = {
-        "path": "/home/dogada/projects/MJS/src/raw.mjs:93:18",
+        "path": "/home/dogada/projects/MJS/src/raw.mjs:91:18",
         "assertion": "(not (hook? (second xs)))",
         "quotedParams": ["(hook? (second xs))"],
         "resolvedParams": [p0]
@@ -1550,9 +1643,13 @@ var lastStmt = (function(form) {
   return raw(form);
 });
 
+var cdataStmts = (function(forms) {
+  return cdataMap(forms, stmt);
+});
+
 metajs.raw = raw;
 
-    
+        
 var jsLiteral = (function(token) {
   return token.replace(/^\-([a-zA-Z])/, "__$1").replace(/\*/g, "_").replace(/\?$/, "__QUERY").replace(/!$/, "__BANG").replace(/-([\w])/g, (function(match, p1) {
     return p1.toUpperCase();
@@ -1617,6 +1714,8 @@ var writeRaw = (function(raw, env) {
     return map(raw.data, (function(__ArG_1) {
       return writeRaw(__ArG_1, env);
     }));
+  } else if ((typeof(raw) === "undefined")) {
+    return 0;
   } else {
     throw (new Error(("Unknown raw, type: " + typeof(raw) + ", value: " + raw + ".")));
   }
@@ -1737,7 +1836,7 @@ setScopeMacro("include", null, (function(file) {
   G__24.resetState = resetState;
 })();
 
-      
+          
 var passes = 0,
     fails = 0;
 
@@ -1796,7 +1895,7 @@ metajs.printTestingState = (function() {
   return console.log(("\nExecuted " + (passes + fails) + " tests, " + green(passes, " passed") + ", " + red(fails, " failed.")));
 });
 
-        
+            
 metajs._assert_ = "exception";
 
 metajs.AssertError = (function(message, assertion, path, resolvedParams) {
@@ -1971,7 +2070,7 @@ setScopeMacro("assertJs_", null, (function(metajsCode, jsPrefix) {
   return metajs.mergeSq(["assert", metajs.mergeSq(["!=", metajs.mergeSq([metajs.mergeSq(["try", metajs.mergeSq([metajs.mergeSq(["metajs.translate", metajsCode]), ".trim"]), metajs.mergeSq(["catch", "e", metajs.mergeSq(["e.toString"])])]), ".indexOf", jsPrefix]), -1])]);
 }));
 
-        
+            
 var destruct = (function(binding, expander) {
   return merge(bulkMap(binding, expander));
 });
@@ -2013,11 +2112,7 @@ var bindSet = (function(name, value) {
 });
 
 var bindDef = (function(name, value) {
-  getScope().setVars([{
-    type: "var",
-    name: tokenValue_(name),
-    token: name
-}]);
+  addScopeSymbol(name);
   if ((typeof(value) === "undefined")) {
     return cdata(expr(name, "def"));
   } else {
@@ -2036,7 +2131,7 @@ var gensym = (function(prefix) {
   return (new Token((prefix + nextId())));
 });
 
-        
+            
 setScopeMacro("defmacro", null, (function(name, params) {
   var code = Array.prototype.slice.call(arguments, 2, undefined);
   var args = transformArgs(params),
@@ -2058,11 +2153,22 @@ setScopeMacro("defmacro", null, (function(name, params) {
   }
 }));
 
+var getFnSignature = (function(verified) {
+  var signature = (verified.def || (verified.entity && verified.entity.extra));
+  if (list__QUERY(signature)) {
+    return signature;
+  } else {
+    return undefined;
+  }
+});
+
 setScopeMacro("_call", null, (function(fnName) {
   /* Internal macro. Generate string with function call. */
   var args = Array.prototype.slice.call(arguments, 1, undefined);
-  var tname = raw(fnName),
-    resolvedArgs = checkCall(fnName, args),
+  var verified = verifyForm(fnName, fnName),
+    tname = raw(verified.form),
+    signature = getFnSignature(verified),
+    resolvedArgs = checkCallParams(fnName, args, signature),
     resolved = (resolvedArgs.length - args.length);
   return cdata(tname, "(", interpose(", ", map(resolvedArgs, (function(__ArG_1) {
     return expr(__ArG_1);
@@ -2128,7 +2234,7 @@ setScopeMacro("set", null, (function() {
   (function(p0) {
     var evaluated = ((p0 % 2) === 0),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:57:17",
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:63:17",
       "assertion": "(even? binding.length)",
       "quotedParams": ["binding.length"],
       "resolvedParams": [p0]
@@ -2179,7 +2285,7 @@ setScopeMacro("hash", null, (function() {
   (function(p0) {
     var evaluated = ((p0 % 2) === 0),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:77:17",
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:83:17",
       "assertion": "(even? pairs.length)",
       "quotedParams": ["pairs.length"],
       "resolvedParams": [p0]
@@ -2207,7 +2313,7 @@ var _ifStmt = (function(forms, rawCtx) {
   (function(p0, p1) {
     var evaluated = (p0 >= p1),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:87:14",
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:93:14",
       "assertion": "(>= forms.length 2)",
       "quotedParams": ["forms.length", "2"],
       "resolvedParams": [p0, p1]
@@ -2262,43 +2368,6 @@ setScopeMacro("while", null, (function(condition) {
   return withMeta({block: true}, cdata("while (", expr(condition), ") {\n", cdataStmts(code), "}"));
 }));
 
-setScopeMacro("switch", null, (function(e) {
-  var cases = Array.prototype.slice.call(arguments, 1, undefined);
-  (function(p0) {
-    var evaluated = (!!p0),
-    ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:114:11",
-      "assertion": "(bool e)",
-      "quotedParams": ["e"],
-      "resolvedParams": [p0]
-};
-    if ((metajs && metajs._assertHandler_)) {
-      return metajs._assertHandler_(evaluated, "", ctx);
-    } else {
-      if (!evaluated) {
-        throw (new Error(("Assert failed: " + "" + " " + ctx.assertion + " at " + ctx.path)));
-      }
-    }
-  })(e);
-  (function(p0) {
-    var evaluated = (p0.length > 0),
-    ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:115:23",
-      "assertion": "(not-empty? cases)",
-      "quotedParams": ["cases"],
-      "resolvedParams": [p0]
-};
-    if ((metajs && metajs._assertHandler_)) {
-      return metajs._assertHandler_(evaluated, "", ctx);
-    } else {
-      if (!evaluated) {
-        throw (new Error(("Assert failed: " + "" + " " + ctx.assertion + " at " + ctx.path)));
-      }
-    }
-  })(cases);
-  return metajs.mergeSq(["scoped", metajs.mergeSq(["_switch", e, ["unquote-splicing", merge(bulkMap(cases, parseCase_))]])]);
-}));
-
 var parseCase_ = (function(left, right) {
   if ((typeof(right) === "undefined")) {
     return [["_default", ["do_", left]]];
@@ -2319,6 +2388,43 @@ setScopeMacro("_switch", null, (function(e) {
   /* Internal macro. Don't call. */
   var cases = Array.prototype.slice.call(arguments, 1, undefined);
   return withMeta({block: true}, cdata("switch (", expr(e), ") {\n", cdataMap(cases, expr), "}"));
+}));
+
+setScopeMacro("switch", null, (function(e) {
+  var cases = Array.prototype.slice.call(arguments, 1, undefined);
+  (function(p0) {
+    var evaluated = (!!p0),
+    ctx = {
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:133:11",
+      "assertion": "(bool e)",
+      "quotedParams": ["e"],
+      "resolvedParams": [p0]
+};
+    if ((metajs && metajs._assertHandler_)) {
+      return metajs._assertHandler_(evaluated, "", ctx);
+    } else {
+      if (!evaluated) {
+        throw (new Error(("Assert failed: " + "" + " " + ctx.assertion + " at " + ctx.path)));
+      }
+    }
+  })(e);
+  (function(p0) {
+    var evaluated = (p0.length > 0),
+    ctx = {
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:134:23",
+      "assertion": "(not-empty? cases)",
+      "quotedParams": ["cases"],
+      "resolvedParams": [p0]
+};
+    if ((metajs && metajs._assertHandler_)) {
+      return metajs._assertHandler_(evaluated, "", ctx);
+    } else {
+      if (!evaluated) {
+        throw (new Error(("Assert failed: " + "" + " " + ctx.assertion + " at " + ctx.path)));
+      }
+    }
+  })(cases);
+  return metajs.mergeSq(["scoped", metajs.mergeSq(["_switch", e, ["unquote-splicing", merge(bulkMap(cases, parseCase_))]])]);
 }));
 
 setScopeMacro("_case", null, (function(x, y) {
@@ -2360,7 +2466,10 @@ setScopeMacro("_try", null, (function(code, catchForm, finallyForm) {
   }
   var params = ["try {\n", rtrn(code), "}"];
   if (catchForm) {
+    startScope("catch");
+    addScopeSymbol((catchForm)[1]);
     params.push(" catch (", expr((catchForm)[1]), ") {\n", rtrn(metajs.mergeSq(["do", ["unquote-splicing", catchForm.slice(2, undefined)]])), "}");
+    finishScope();
   }
   if (finallyForm) {
     params.push(" finally {\n", stmt(metajs.mergeSq(["do", ["unquote-splicing", finallyForm.slice(1, undefined)]])), "}");
@@ -2462,7 +2571,7 @@ setScopeMacro("__return", null, (function(x) {
   return withMeta({dontReturn: true}, cdata("return ", expr(x)));
 }));
 
-        
+            
 setScopeMacro("fn", null, (function(params) {
   var body = Array.prototype.slice.call(arguments, 1, undefined);
   var args = transformArgs(params),
@@ -2484,6 +2593,15 @@ setScopeMacro("defn", null, (function(fnName, params) {
   getScope().setFn(name_, args);
   return rawStatement;
 }));
+
+var buildSignature = (function(args) {
+  var positional = filter(args, (function(arg) {
+    return ("rest" !== arg.presence);
+  }));
+  return join(", ", map(positional, (function(arg) {
+    return expr(arg.name, "arg");
+  })));
+});
 
 var fnSignature = (function(fnName, args) {
   return (fnName + "/" + args.length);
@@ -2523,15 +2641,6 @@ var transformArgs = (function(arglist) {
     syntaxError(("unexpected '&' in signature"), (arglist)[(arglist.length - 1)]);
   }
   return args;
-});
-
-var buildSignature = (function(args) {
-  var positional = filter(args, (function(arg) {
-    return ("rest" !== arg.presence);
-  }));
-  return join(", ", map(positional, (function(arg) {
-    return expr(arg.name, "arg");
-  })));
 });
 
 var fnVars = (function(args) {
@@ -2574,7 +2683,7 @@ var fnBody = (function(args, body) {
   return cdata.apply(this, res);
 });
 
-        
+            
 var multiOp = (function(op, args) {
   return cdata("(", interpose((" " + op + " "), map(args, expr)), ")");
 });
@@ -3058,7 +3167,7 @@ setScopeMacro("fmt", null, (function(s) {
     }
   }));
   
-          
+              
 var firstAtom = (function(form) {
   if (list__QUERY(form)) {
     return firstAtom((form)[0]);
@@ -3077,7 +3186,7 @@ var firstToken = (function(form) {
   }
 });
 
-          
+              
 setScopeMacro("log", null, (function() {
   var body = Array.prototype.slice.call(arguments, 0, undefined);
   return metajs.mergeSq(["console.log", ["unquote-splicing", body]]);
@@ -3099,12 +3208,12 @@ setScopeMacro("logCallStack", null, (function() {
   return metajs.mergeSq(["log", metajs.mergeSq(["get", metajs.mergeSq(["new", "Error"]), metajs.mergeSq(["quote", "stack"])])]);
 }));
 
-          
-          // root scope for user functions and macros;
-          
-          // symbol with same name as in global scope will hide but not delete global definition;
-          
-          startScope("root");
-          
+              
+              // root scope for user functions and macros;
+              
+              // symbol with same name as in global scope will hide but not delete global definition;
+              
+              startScope("root");
+              
 })();
 

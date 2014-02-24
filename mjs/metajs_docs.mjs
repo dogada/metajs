@@ -1,3 +1,5 @@
+(declare Object console eval metajs $)
+
 (scoped
  (defn init-repl ()
    "Put all MetaJS symbols into root scope for better REPL."
