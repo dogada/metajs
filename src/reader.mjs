@@ -2,6 +2,8 @@
 ;;; Token is the form itself and meta-information about source (filename, line,
 ;;; column) used for error reporting and building source maps.
 
+(declare read-form wrap-in-double-quotes)
+
 ; regular expressions for supported forms
 (def tokens {regex              /\/(\\\/|[^\/\n])+\/[glim]*/
              comment            /\;.*/
@@ -151,7 +153,7 @@
   ls)
 
 (defn read-number (token stream)
-  (new Token (parse-float (token.value.replace (regex "," 'g) ""))))
+  (new Token (parseFloat (token.value.replace (regex "," 'g) ""))))
 
 (defn istring? (s)
   (and (quoted? s) (istring-arg-re.test s)))
@@ -174,6 +176,13 @@
     (cons "unquote-splicing" [(read-normal (token.slice 2))])
     (cons "unquote" [(read-normal (token.slice 1))])))
 
+(defn make-param (id)
+  "Functions defined with #() can't be nested, so it safe don't use (gensym) here."
+  (switch id
+          "&" "__ArG_more"
+          "$" "arguments[arguments.length - 1]"
+          (str "__ArG_" id)))
+
 (defn make-fn-params (args)
   (def params []
     ids (keys args)
@@ -184,12 +193,6 @@
   (if (contains? ids "&") (params.push "&" (make-param "&")))
   params)
 
-(defn make-param (id)
-  "Functions defined with #() can't be nested, so it safe don't use (gensym) here."
-  (switch id
-          "&" "__ArG_more"
-          "$" "arguments[arguments.length - 1]"
-          (str "__ArG_" id)))
 
 (defn read-fn (token stream)
   (when (defined? *reader-fn-args*)

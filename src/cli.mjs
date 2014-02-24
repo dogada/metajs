@@ -1,3 +1,7 @@
+(include "./logos/javascript")
+(include "./logos/node")
+
+
 (def
   metajs (require "./metajs_node")
   program (require "commander")

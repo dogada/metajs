@@ -1,3 +1,5 @@
+(include "./logos/javascript")
+
 (scoped
  (def metajs {})
  (set-in window

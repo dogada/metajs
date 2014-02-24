@@ -1,3 +1,7 @@
+(include "../src/logos/javascript.mjs")
+(include "../src/logos/node.mjs")
+(include "../src/logos/metajs.mjs")
+
 (def metajs (require "../lib/metajs_node")
     util (require 'util)
     inspect  util.inspect)
@@ -13,6 +17,7 @@
 (include "./macros.mjs")
 (include "./function.mjs")
 (include "./object.mjs")
+(include "./scope.mjs")
 (include "./logos.mjs")
 (include "./def.mjs")
 (include "./get.mjs")

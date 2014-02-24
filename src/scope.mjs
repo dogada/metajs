@@ -37,6 +37,12 @@
               (-add-provider name v symbols)))
   this)
 
+(defn add-scope-symbol (sym)
+  ((get-scope) .set-vars [{type: "var"
+                           name: (sym.toString)
+                           token: sym}]))
+
+
 (defn -rel-targets (rel)
   (def targets (second rel))
   (if (list-literal? targets) (slice targets 1)
@@ -132,18 +138,19 @@
   "Lookup for a def inside root def."
   (find-in-stack 'context name (closure-scope-count)))
 
-(defn find-macro (name)
-  (def table (find-macro-table name)
-    macro (and table (get table name)))
-  (comment log "find-macro" name (bool table))
-  macro)
-
 (defn find-macro-table (name)
   (def table {} depth 0)
   (until (or (get table name) (>= depth (scope-count)))
          (set table (get-scope depth @macros))
          (inc depth))
   (if* (get table name) table))
+
+(defn find-macro (name)
+  (def table (find-macro-table name)
+    macro (and table (get table name)))
+  (comment log "find-macro" name (bool table))
+  macro)
+
 
 (defn dump-stack ()
   (log "---------------- Stack " (scope-count) "------------------")
@@ -152,3 +159,5 @@
 
 (export* metajs
          dump-stack get-scope)
+
+

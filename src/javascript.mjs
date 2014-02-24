@@ -116,11 +116,6 @@
   (with-meta {block: true}
     (cdata "while (" (expr condition) ") {\n" (cdata-stmts code) "}")))
 
-(defmacro switch (e & cases)
-  (asserts e
-           (not-empty? cases))
-  `(scoped (*switch ~e ~@(merge (bulk-map cases parse-case*)))))
-
 (defn parse-case* (left right)
   (if (undefined? right) [['*default ['do* left]]]
       (quote? left) (parse-case* (quote* (second left)) right)
@@ -133,6 +128,12 @@
   "Internal macro. Don't call."
   (with-meta {block: true}
     (cdata "switch (" (expr e) ") {\n" (cdata-map cases expr) "}")))
+
+(defmacro switch (e & cases)
+  (asserts e
+           (not-empty? cases))
+  `(scoped (*switch ~e ~@(merge (bulk-map cases parse-case*)))))
+
 
 (defmacro *case (x y:?)
   "Internal macro. Don't call."
@@ -156,7 +157,10 @@
     (syntax-error "At least catch or finally must be provided." code))
   (def params ["try {\n" (rtrn code) "}"])
   (when catch-form
-    (params.push " catch (" (expr (second catch-form)) ") {\n" (rtrn `(do ~@(slice catch-form 2))) "}"))
+    (start-scope "catch")
+    (add-scope-symbol (second catch-form))
+    (params.push " catch (" (expr (second catch-form)) ") {\n" (rtrn `(do ~@(slice catch-form 2))) "}")
+    (finish-scope))
   (when finally-form
     (params.push " finally {\n" (stmt `(do ~@(slice finally-form 1))) "}"))
   (with-meta {block: true}

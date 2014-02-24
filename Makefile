@@ -3,9 +3,8 @@ vpath %.js ./lib
 # for targets like compile/all
 vpath % ./var
 
-MJS = $(shell find ./src -name "*.mjs" -not -name ".*" -printf "%f\n")
+MJS = $(shell find ./src -name "*.mjs")
 JS = $(MJS:.mjs=.js)
-ALL_MJS = $(shell find ./src ./test  -name "*.mjs" -not -name ".*" -printf "%f\n")
 LIB_MJS = src/metajs_node.mjs src/metajs_browser.mjs src/cli.mjs
 
 all: clean compile-all docs test

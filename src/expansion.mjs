@@ -1,16 +1,5 @@
-(defmacro syntax-quote (form)
-  (if (list? form)
-    (switch (token-value* (first form))
-            "unquote" (js-quote (second form))
-            "unquote-splicing" ['list "\"unquote-splicing\"" (js-quote (second form))]
-            (cons 'metajs.merge-sq [(cons 'list (map form (find-macro 'syntax-quote)))]))
-    (quote* form)))
-
 (defn wrap-in-double-quotes (x)
   (str "\"" x "\""))
-
-(defn strip-double-quotes (x)
-  (if (quoted? x) (x.slice 1 -1) x))
 
 (defn escape-js (x)
   (x
@@ -22,6 +11,9 @@
    .replace /\\\"/g "\\\\\""
    .replace /\"/g "\\\""))
 
+(defn strip-double-quotes (x)
+  (if (quoted? x) (x.slice 1 -1) x))
+
 (defn js-quote (form)
   (def value (token-value* form))
   (if (list? value)
@@ -29,6 +21,15 @@
     (if (quoted? value)
       (wrap-in-double-quotes (escape-js-quotes value))
       value)))
+
+(defmacro syntax-quote (form)
+  (if (list? form)
+    (switch (token-value* (first form))
+            "unquote" (js-quote (second form))
+            "unquote-splicing" ['list "\"unquote-splicing\"" (js-quote (second form))]
+            (cons 'metajs.merge-sq [(cons 'list (map form (find-macro 'syntax-quote)))]))
+    (quote* form)))
+
 
 (defmacro quote (x)
   (quote* x))

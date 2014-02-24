@@ -1,3 +1,5 @@
+(include "./logos/metajs")
+
 (defn error (x)
   (throw x))
 
@@ -10,6 +12,7 @@
         '*assert-handler* metajs.throw-handler
         'error error
         'lint-log-level 3)
+
 
 (include "./lint")
 (include "./scope")

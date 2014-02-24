@@ -1,3 +1,6 @@
+(include "./logos/javascript")
+(include "./logos/node")
+
 (def metajs exports
   util (require 'util)
   path (require 'path)

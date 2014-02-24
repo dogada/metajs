@@ -1,3 +1,5 @@
+(declare resolve-arg verify-form)
+
 (defn call-str (name args)
   (str name "("
        (join " " (map args (fn (arg)
@@ -128,6 +130,21 @@
   ((get-scope) .set-entity name rels doc)
   undefined)
 
+(defmacro declare-fn (& pairs)
+  "Declare an function on the current scope."
+  (defn declare-one (sym args)
+    ((get-scope) .set-fn sym (transform-args args)))
+  (bulk-map pairs (fn (target args)
+                    (if (list? target) (each (sym) (rest target) (declare-one))
+                        (declare-one target))))
+  undefined)
+
+(defmacro declare (& symbols)
+  "Declare some symbols in the current scope."
+  (each (sym) symbols
+        (add-scope-symbol sym))
+  undefined)
+
 
 (defn verify-name (name parent)
   "Verify that name is defined or resolve it or print warning."
@@ -149,4 +166,5 @@
 (defn verify-form (form parent)
   (if (symbol? form) (verify-name form)
       {form: form})) 
+
 

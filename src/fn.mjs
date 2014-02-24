@@ -1,3 +1,5 @@
+(declare build-signature fn-body)
+
 (defmacro fn (params & body)
   (def args (transform-args params)
     signature (build-signature args)
@@ -15,6 +17,11 @@
     raw-statement (raw ast))
   ((get-scope) .set-fn name* args)
   raw-statement)
+
+(defn build-signature (args)
+  (def positional (filter args
+                          (fn (arg) (!= 'rest arg.presence))))
+  (join ", " (map positional (fn (arg) (expr arg.name 'arg)))))
 
 (defn fn-signature (fn-name args)
   (str fn-name "/" args.length))
@@ -47,11 +54,6 @@
     (syntax-error (str "unexpected '&' in signature") (last arglist)))
   args)
 
-
-(defn build-signature (args)
-  (def positional (filter args
-                          (fn (arg) (!= 'rest arg.presence))))
-  (join ", " (map positional (fn (arg) (expr arg.name 'arg)))))
 
 (defn fn-vars (args)
   (def rest (first (filter args

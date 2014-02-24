@@ -23,9 +23,7 @@
   (cdata (expr name) " = " (expr value)))
 
 (defn bind-def (name value)
-  ((get-scope) .set-vars [{type: "var"
-                           name: (token-value* name)
-                           token: name}])
+  (add-scope-symbol name)
   (if (undefined? value)
     (cdata (expr name 'def))
     (cdata (expr name) " = " (expr value))))

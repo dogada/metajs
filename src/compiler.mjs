@@ -1,3 +1,5 @@
+(declare push-js)
+
 (defn js-literal (token)
   (token
    .replace /^\-([a-zA-Z])/ "__$1"
