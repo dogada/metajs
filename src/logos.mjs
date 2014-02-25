@@ -163,7 +163,7 @@
   (or main {form: name}))
 
 
-(defn verify-form (form parent)
+(defn verify-form (form parent:?)
   (if (symbol? form) (verify-name form)
       {form: form})) 
 

@@ -1,4 +1,6 @@
 (include "./logos/javascript")
+(include "./logos/browser")
+(include "./logos/metajs")
 
 (scoped
  (def metajs {})

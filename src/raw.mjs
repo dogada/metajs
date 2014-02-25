@@ -123,8 +123,15 @@
   (string .split "\n" .join "\\n\" +\n\""))
 
 (defn raw-literal (token role)
-  (if (= role 'def) token
-      (js-literal (token-value* token))))
+  ;; try to resolve every literal that isn't definition of new symbol or
+  ;; function arg via active logos rules
+  (def resolved (if* (and (!= role 'def) (!= role 'arg))
+                     ((verify-form token) @form)
+                     token))
+  ;; convert def literals in compiler to generate source maps also
+  (if (!= token resolved) (raw resolved role)
+      (= role 'def) token
+      (js-literal (token-value* resolved))))
 
 (defn raw-string (string role token)
   (if (literal? string) (raw-literal (or token string) role)
@@ -148,7 +155,7 @@
 
 (defn expr (form role:?)
   (set-raw-ctx 'expr)
-  (raw form))
+  (raw form role))
 
 (defn stmt (form)
   (set-raw-ctx 'stmt)

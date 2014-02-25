@@ -22,6 +22,12 @@
                           source: (token.source-str)}))
   (push env.js js-name))
 
+;;; rebindable in the compiler environment
+(def *env*)
+
+(defn make-env (indent:"  " source-map:?)
+  {js: [] offset: 0 indent: indent _indent: "" source-map: [] raw-ctx: null})
+
 (defn indent-raw (raw env)
   (when (match? /^[^\"\'\/]*\}/ raw)
     (set env._indent (slice env._indent env.indent.length)))
@@ -46,11 +52,6 @@
       (throw (str "Unknown raw, type: " (typeof raw) ", value: " raw "."))))
 
 
-;;; rebindable in the compiler environment
-(def *env*)
-
-(defn make-env (indent:"  " source-map:?)
-  {js: [] offset: 0 indent: indent _indent: "" source-map: [] raw-ctx: null})
 
 (defn push-js (env x)
   (env.js.push x))

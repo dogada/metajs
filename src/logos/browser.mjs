@@ -1,1 +1,1 @@
-(declare window navigator screen history location)
+(declare window navigator screen history location localStorage sessionStorage)

@@ -37,7 +37,7 @@
 (defmacro get (obj key)
   (def js-id (and (quote? key) (js-symbol (second key))))
   (if (valid-js-id? js-id)
-    `(js "%.%" ~obj ~js-id)
+    (cdata (expr obj) "." (expr js-id 'def))
     `(js "(%)[%]" ~obj ~key)))
 
 (defmacro . (x y & more)
@@ -83,7 +83,7 @@
   (assert (even? pairs.length))
   (def kvs
     (bulk-map pairs (fn (key value)
-                      (cdata (expr key) ": " (expr value)))))
+                      (cdata (expr key 'arg) ": " (expr value)))))
   (if (< kvs.length 2)
     (cdata "{" (interpose ", " kvs) "}")
     (cdata "{\n" (interpose ",\n" kvs) "\n}")))

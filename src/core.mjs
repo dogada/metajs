@@ -1,5 +1,3 @@
-(include "./logos/metajs")
-
 (defn error (x)
   (throw x))
 

@@ -26,7 +26,7 @@
   (add-scope-symbol name)
   (if (undefined? value)
     (cdata (expr name 'def))
-    (cdata (expr name) " = " (expr value))))
+    (cdata (expr name 'def) " = " (expr value))))
 
 
 (defn next-id ()
