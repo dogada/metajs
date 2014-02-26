@@ -29,7 +29,7 @@
   (cdata (expr left) " " (expr op) " " (expr right)))
 
 (defmacro = (x & more)
-  (def left (expr x)
+  (def left x
     ops (map more #(list 'compare-op "===" left %)))
   `(and ~@ops))
 
