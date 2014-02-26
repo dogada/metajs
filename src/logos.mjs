@@ -81,7 +81,7 @@
                 ;; keyword argumets always ignore params passed positionally
                 (if (= arg.presence 'keyword)
                   (resolved.push (last arg.meta))
-                  (resolved.push (verify-form (positional.shift) fn-token @form))))
+                  (resolved.push (positional.shift))))
               (resolve-blank arg)))))
   (when (not-empty? hints)
     (syntax-error (str "Unsupported hints: " (call-str name hints)) fn-token))

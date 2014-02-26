@@ -18,11 +18,10 @@
 (defmacro *call (fn-name & args)
   "Internal macro. Generate string with function call."
   (def verified (verify-form fn-name fn-name)
-    tname (raw verified.form)
     signature (get-fn-signature verified)
     resolved-args (check-call-params fn-name args signature)
     resolved (- resolved-args.length args.length))
-  (cdata tname
+  (cdata (expr verified.form)
          "(" (interpose ", " (map resolved-args #(expr %))) ")"
          (if resolved (str " /*logos:" resolved  "*/ ") "")))
 
