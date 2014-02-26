@@ -1,4 +1,4 @@
-(declare Object console eval metajs $)
+(declare window Object console eval metajs $)
 
 (scoped
  (defn init-repl ()

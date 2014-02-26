@@ -1,6 +1,10 @@
 // common extensions;
 
 
+
+// common runtime functions;
+
+
 (function() {
   var metajs = {};
   window.metajs = metajs;
@@ -10,9 +14,6 @@
   var pr = (function(x) {
     return console.log(x);
   });
-  // common runtime functions;
-
-
 var error = (function(x) {
   throw (new Error(x));
 });
@@ -1195,7 +1196,7 @@ var checkCallParams = (function(fnToken, params, expected) {
         if ((arg.presence === "keyword")) {
           return resolved.push((arg.meta)[(arg.meta.length - 1)]);
         } else {
-          return resolved.push(verifyForm(positional.shift(), fnToken).form);
+          return resolved.push(positional.shift());
         }
       } else {
         return resolveBlank(arg);
@@ -1544,10 +1545,16 @@ var rawQuotedString = (function(string) {
 });
 
 var rawLiteral = (function(token, role) {
-  if ((role === "def")) {
+  // try to resolve every literal that isn't definition of new symbol or;
+  // function arg via active logos rules;
+  var resolved = (((role !== "def") && (role !== "arg")) ? verifyForm(token).form : token);
+  // convert def literals in compiler to generate source maps also;
+  if ((token !== resolved)) {
+    return raw(resolved, role);
+  } else if ((role === "def")) {
     return token;
   } else {
-    return jsLiteral(tokenValue_(token));
+    return jsLiteral(tokenValue_(resolved));
   }
 });
 
@@ -1586,7 +1593,7 @@ var setRawCtx = (function(x) {
 
 var expr = (function(form, role) {
   setRawCtx("expr");
-  return raw(form);
+  return raw(form, role);
 });
 
 var stmt = (function(form) {
@@ -1678,6 +1685,22 @@ var writeToken = (function(token, env) {
   return env.js.push(jsName);
 });
 
+// rebindable in the compiler environment;
+
+var _env_;
+
+var makeEnv = (function(indent, sourceMap) {
+  indent = ((typeof(indent) === "undefined") ? "  " : indent);
+  return {
+    js: [],
+    offset: 0,
+    indent: indent,
+    _indent: "",
+    sourceMap: [],
+    rawCtx: null
+};
+});
+
 var indentRaw = (function(raw, env) {
   if (raw.match(/^[^\"\'\/]*\}/)) {
     env._indent = env._indent.slice(env.indent.length, undefined);
@@ -1719,22 +1742,6 @@ var writeRaw = (function(raw, env) {
   } else {
     throw (new Error(("Unknown raw, type: " + typeof(raw) + ", value: " + raw + ".")));
   }
-});
-
-// rebindable in the compiler environment;
-
-var _env_;
-
-var makeEnv = (function(indent, sourceMap) {
-  indent = ((typeof(indent) === "undefined") ? "  " : indent);
-  return {
-    js: [],
-    offset: 0,
-    indent: indent,
-    _indent: "",
-    sourceMap: [],
-    rawCtx: null
-};
 });
 
 var pushJs = (function(env, x) {
@@ -2116,7 +2123,7 @@ var bindDef = (function(name, value) {
   if ((typeof(value) === "undefined")) {
     return cdata(expr(name, "def"));
   } else {
-    return cdata(expr(name), " = ", expr(value));
+    return cdata(expr(name, "def"), " = ", expr(value));
   }
 });
 
@@ -2166,11 +2173,10 @@ setScopeMacro("_call", null, (function(fnName) {
   /* Internal macro. Generate string with function call. */
   var args = Array.prototype.slice.call(arguments, 1, undefined);
   var verified = verifyForm(fnName, fnName),
-    tname = raw(verified.form),
     signature = getFnSignature(verified),
     resolvedArgs = checkCallParams(fnName, args, signature),
     resolved = (resolvedArgs.length - args.length);
-  return cdata(tname, "(", interpose(", ", map(resolvedArgs, (function(__ArG_1) {
+  return cdata(expr(verified.form), "(", interpose(", ", map(resolvedArgs, (function(__ArG_1) {
     return expr(__ArG_1);
   }))), ")", (function() {
     if (resolved) {
@@ -2194,7 +2200,7 @@ setScopeMacro("def", null, (function() {
 setScopeMacro("get", null, (function(obj, key) {
   var jsId = (quote__QUERY(key) && jsSymbol((key)[1]));
   if (validJsId__QUERY(jsId)) {
-    return metajs.mergeSq(["js", "\"%.%\"", obj, jsId]);
+    return cdata(expr(obj), ".", expr(jsId, "def"));
   } else {
     return metajs.mergeSq(["js", "\"(%)[%]\"", obj, key]);
   }
@@ -2234,7 +2240,7 @@ setScopeMacro("set", null, (function() {
   (function(p0) {
     var evaluated = ((p0 % 2) === 0),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:63:17",
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:62:17",
       "assertion": "(even? binding.length)",
       "quotedParams": ["binding.length"],
       "resolvedParams": [p0]
@@ -2285,7 +2291,7 @@ setScopeMacro("hash", null, (function() {
   (function(p0) {
     var evaluated = ((p0 % 2) === 0),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:83:17",
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:82:17",
       "assertion": "(even? pairs.length)",
       "quotedParams": ["pairs.length"],
       "resolvedParams": [p0]
@@ -2299,7 +2305,7 @@ setScopeMacro("hash", null, (function() {
     }
   })(pairs.length);
   var kvs = bulkMap(pairs, (function(key, value) {
-    return cdata(expr(key), ": ", expr(value));
+    return cdata(expr(key, "arg"), ": ", expr(value));
   }));
   if ((kvs.length < 2)) {
     return cdata("{", interpose(", ", kvs), "}");
@@ -2313,7 +2319,7 @@ var _ifStmt = (function(forms, rawCtx) {
   (function(p0, p1) {
     var evaluated = (p0 >= p1),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:93:14",
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:92:14",
       "assertion": "(>= forms.length 2)",
       "quotedParams": ["forms.length", "2"],
       "resolvedParams": [p0, p1]
@@ -2395,7 +2401,7 @@ setScopeMacro("switch", null, (function(e) {
   (function(p0) {
     var evaluated = (!!p0),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:133:11",
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:132:11",
       "assertion": "(bool e)",
       "quotedParams": ["e"],
       "resolvedParams": [p0]
@@ -2411,7 +2417,7 @@ setScopeMacro("switch", null, (function(e) {
   (function(p0) {
     var evaluated = (p0.length > 0),
     ctx = {
-      "path": "/home/dogada/projects/MJS/src/javascript.mjs:134:23",
+      "path": "/home/dogada/projects/MJS/src/javascript.mjs:133:23",
       "assertion": "(not-empty? cases)",
       "quotedParams": ["cases"],
       "resolvedParams": [p0]
@@ -2734,7 +2740,7 @@ setScopeMacro("compareOp", null, (function(op, left, right) {
 
 setScopeMacro("=", null, (function(x) {
   var more = Array.prototype.slice.call(arguments, 1, undefined);
-  var left = expr(x),
+  var left = x,
     ops = map(more, (function(__ArG_1) {
     return ["compareOp", "===", left, __ArG_1];
   }));
