@@ -16,17 +16,20 @@
 
 (set-in metajs
         'dir  (process.cwd)
-        'pr pr)
+        'pr pr
+        'includes {})
 
 (defn metajs.remove-script-header (data)
   (data.replace /^#!.*\n/ ""))
 
-(defn metajs.include (file)
+(defn metajs.include (file once:false)
   (when (not (file.match /\.(mjs|json)$/))
     (set file (str file ".mjs")))
   (when (file.match (regex "^\\./"))
     (set file (str metajs.dir "/" file)))
-  (metajs.translate-file (require.resolve file) "Include"))
+  (when-not (and once (get metajs.includes file))
+    (set-in metajs.includes file true)
+    (metajs.translate-file (require.resolve file) "Include")))
 
 (defn with-dir-and-file (dir file role func)
   (def scope (get-scope))
