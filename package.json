@@ -1,7 +1,7 @@
 {
   "name": "metajs",
   "homepage": "http://metajs.coect.net",
-  "version": "0.3.0-dev",
+  "version": "0.3.0",
   "keywords": [
     "logos",
     "lisp",

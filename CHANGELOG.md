@@ -1,3 +1,7 @@
+### 08.06.2014 -- 0.3.0
+
+* Added include-once to support inclusion of same logos files several times in the same compiled file.
+
 ### 26.02.2014 -- 0.2.1
 
 * All symbols are now resolved using active logos rules. See
