@@ -1,4 +1,8 @@
+(use "./logos/javascript")
+(use "./logos/metajs")
+
 (declare resolve-arg verify-form)
+
 
 (defn call-str (name args)
   (str name "("
@@ -133,7 +137,7 @@
 (defmacro declare-fn (& pairs)
   "Declare an function on the current scope."
   (defn declare-one (sym args)
-    ((get-scope) .set-fn sym (transform-args args)))
+    ((get-scope) .set-fn sym (transform-args args) false))
   (bulk-map pairs (fn (target args)
                     (if (list? target) (each (sym) (rest target) (declare-one))
                         (declare-one target))))
@@ -142,7 +146,7 @@
 (defmacro declare (& symbols)
   "Declare some symbols in the current scope."
   (each (sym) symbols
-        (add-scope-symbol sym))
+        (add-scope-symbol sym false))
   undefined)
 
 

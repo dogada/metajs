@@ -1,4 +1,5 @@
-(declare push-js)
+(use "./logos/javascript")
+(use "./logos/metajs")
 
 (defn js-literal (token)
   (token
@@ -100,6 +101,11 @@
   "This macro depends on metajs.include that platform (node or browser) should implement."
   (with-meta {virtual: true}
     (cdata (metajs.include (eval-expr file)))))
+
+(defmacro use (file)
+  "Include file if it was not included early (or use early included)."
+  (with-meta {virtual: true}
+    (cdata (metajs.include (eval-expr file) true))))
 
 (export* metajs
          compile translate js-literal js-symbol reset-state)

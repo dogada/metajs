@@ -9,9 +9,13 @@
           'relations {})
   this)
 
-(defn Scope.prototype.set-fn (name args)
-  (set-in this.context name args)
+(defn Scope.prototype.set-symbol (name value overwrite)
+  (when (or overwrite (not (get this.context name)))
+    (set-in this.context name value))
   this)
+
+(defn Scope.prototype.set-fn (name args overwrite:true)
+  (this.set-symbol name args overwrite))
 
 (defn Scope.prototype.set-macro (name args fn)
   (set-in this.macros name fn)
@@ -28,19 +32,20 @@
     (set-in index target providers))
   (providers.push provider))
 
-(defn Scope.prototype.set-vars (vars)
+(defn Scope.prototype.set-vars (vars overwrite:true)
   (def context this.context
-    symbols this.symbols)
+    symbols this.symbols
+    self this)
   (each (v) vars
-        (set-in context v.name v)
+        (self.set-symbol v.name v overwrite)
         (each (name) (get-token-entities v.token)
               (-add-provider name v symbols)))
   this)
 
-(defn add-scope-symbol (sym)
+(defn add-scope-symbol (sym overwrite:true)
   ((get-scope) .set-vars [{type: "var"
                            name: (sym.toString)
-                           token: sym}]))
+                           token: sym}] overwrite))
 
 
 (defn -rel-targets (rel)
