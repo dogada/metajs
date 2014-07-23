@@ -183,7 +183,7 @@ The compiler will execute the instructions exactly as before, but in addition to
 grammar instructions, it will also execute semantic instructions defined
 specifically for your program.
 
-Imagine that you're explaining how does your program work to a grandmother who knows
+Imagine that you're explaining how does your program work to someone who knows
 nothing about programming &mdash; it's an old grammar compiler. Now imagine that
-you're explaining the same thing to a girl with a degree in computer science &mdash;
+you're explaining the same thing to someone with a degree in computer science &mdash;
 it's a new semantic compiler. But you will have to explain it in both cases.
