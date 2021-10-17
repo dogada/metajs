@@ -9,13 +9,13 @@ parts of code**.
 MetaJS is yet another attempt to create better programming language for modern
 world. More about MetaJS background, why it was chosen Lisp-syntax and why it's
 compiled to Javascript, you can find on
-[coect.net/metajs/](http://www.coect.net/metajs/). Project Coect aims to replace
+[coect.dogada.org/metajs/](http://coect.dogada.org/metajs/). Project Coect aims to replace
 outdated Email and XMPP with modern [universal communication
-protocol](http://www.coect.net/).
+protocol](http://coect.dogada.org/).
 
 MetaJS for Coect plays the same role as Emacs Lisp for Emacs. MetaJS is written
 in MetaJS and can recompile itself. Look at the [interactive
-MetaJS-documentation](http://metajs.coect.net/) where you can try MetaJS without
+MetaJS-documentation](http://metajs.dogada.org/) where you can try MetaJS without
 leaving your browser.
 
 Knowledge-oriented programming as opposed to object-oriented or functional one gives
@@ -24,8 +24,8 @@ the program (objects or functions). Each semantic model (in the form that
 compiler can understand) is called [logos](http://en.wikipedia.org/wiki/Logos).
 
 You can find more information about semantic code transformations, examples of
-symbolic and entitative MetaJS to JavaScipt transformations in the [metajs_semantic_code_transformations.pdf](http://metajs.coect.net/pdf/metajs_semantic_code_transformations.pdf).
-Please look also at the high-level MetaJS language overview [metajs_lisp.pdf](http://metajs.coect.net/pdf/metajs_lisp.pdf).
+symbolic and entitative MetaJS to JavaScipt transformations in the [metajs_semantic_code_transformations.pdf](http://metajs.dogada.org/pdf/metajs_semantic_code_transformations.pdf).
+Please look also at the high-level MetaJS language overview [metajs_lisp.pdf](http://metajs.dogada.org/pdf/metajs_lisp.pdf).
 
 ### Seamless integration with Javascript
 
@@ -70,10 +70,15 @@ example let's look at following [code-sample](http://d3js.org/#transitions) from
 D3 homepage:
 
 ```javascript
-d3.selectAll("circle").transition()
-    .duration(750)
-    .delay(function(d, i) { return i * 10; })
-    .attr("r", function(d) { return Math.sqrt(d * scale); });
+d3.selectAll("circle")
+  .transition()
+  .duration(750)
+  .delay(function (d, i) {
+    return i * 10;
+  })
+  .attr("r", function (d) {
+    return Math.sqrt(d * scale);
+  });
 ```
 
 and rewrite it in MetaJS using hooks and short anonymous functions:
@@ -123,12 +128,11 @@ namespaces and integrate support of
 list](http://github.com/dogada/metajs/issues) of planned changes and offer your
 own.
 
-
 ### How to install and try MetaJS
 
 Firstly, please install [Node.js](http://nodejs.org/download/).
 
-If you want  to install latest development version of MetaJS:
+If you want to install latest development version of MetaJS:
 
 ```sh
 $ git clone https://github.com/dogada/metajs.git
@@ -173,9 +177,8 @@ Add any bugs or feature requests to the
 [d0gada](http://www.twitter.com/d0gada) on Twitter to receive latest metajs
 news. Like [MetaJS page](https://www.facebook.com/pages/Metajs/1389834274578119)
 on Facebook. Join our [mailing list](https://groups.google.com/d/forum/coect).
-Please visit [www.coect.net](http://www.coect.net) to find more docs and
+Please visit [coect.dogada.org](http://coect.dogada.org) to find more docs and
 examples.
-
 
 ### MetaJS allows compiler to generate source code. Will a computer create programs instead of a human?
 

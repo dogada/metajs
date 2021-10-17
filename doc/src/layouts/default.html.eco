@@ -13,7 +13,7 @@
     <meta name="keywords" content="<%= @getPreparedKeywords() %>" />
     <%- @getBlock('meta').toHTML() %>
     <meta property="og:title" content="<%= @getPreparedTitle() %>" />
-    <meta property="og:image" content="http://www.coect.net/img/logo_128.png" />
+    <meta property="og:image" content="http://coect.dogada.org/img/logo_128.png" />
     <meta property="og:type" content="article" />
     <% if @document.description: %>
     <meta property="og:description" content="<%= @document.description %>" />
@@ -68,7 +68,7 @@
 	    <a href="/faq/">FAQ</a>
 	  </li>
           <li>
-	    <a href="http://www.coect.net/">Coect.net</a>
+	    <a href="http://coect.dogada.org/">Coect</a>
 	  </li>
         </ul>
       </div>

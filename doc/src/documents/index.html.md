@@ -1,21 +1,20 @@
 ---
-layout: 'default'
-slug: 'overview'
-title: 'MetaJS is a Lisp that can guess your thoughts and generate missed code'
+layout: "default"
+slug: "overview"
+title: "MetaJS is a Lisp that can guess your thoughts and generate missed code"
 ---
 
 #### Introduction
 
 MetaJS is Lisp compiled to Javascript. Final code runs in browser or on NodeJs
 plaform without runtime dependencies. More about MetaJS background you can find
-on [coect.net/metajs/](http://www.coect.net/metajs/). Project Coect aims to
+on [coect.dogada.org/metajs/](http://coect.dogada.org/metajs/). Project Coect aims to
 replace outdated Email and XMPP with modern [universal communication
-protocol](http://www.coect.net/). MetaJS for Coect plays the same role as Emacs
+protocol](http://coect.dogada.org/). MetaJS for Coect plays the same role as Emacs
 Lisp for Emacs.
 
 Bellow is an interactive overview of MetaJS language. You can change MetaJS
 code as you read docs and imediatelly see generated javascript code.
-
 
 #### Destructuring
 
@@ -30,14 +29,12 @@ MetaJS supports destructuring in `def`, `get`, `set` forms:
   (set [one two three] digits))
 ```
 
-
 #### Method and property hooks
 
 For chaining methods calls and object property access there is also method and
 property hooks. Literal begining with `.` is treated as method of the previous
 form, next forms are parameters of the method. Literal begining with `@` is
-property of previous form, for example `(get obj 'prop)` can be written as `(obj
-@prop)`. Hooks are espesially useful when they are combined:
+property of previous form, for example `(get obj 'prop)` can be written as `(obj @prop)`. Hooks are espesially useful when they are combined:
 
 ```lisp
 (d3 .selectAll "circle" .transition
@@ -76,7 +73,6 @@ Functions can have optional parameters and parameters with default values. Each
 parameter can be passed positionally or as keyword. In addition function can
 accept variable number of parameters that are accessible as list.
 
-
 ```lisp
 (defn demo-fn (a b:Thing c:? d:2 & more)
  (log a b c d more))
@@ -109,12 +105,12 @@ classical conditional form `if` in different contexts.
 
 <h4 id="magic">Magic</h4>
 
-It's not a joke  that MetaJS compiler can guess your thoughts and generate
+It's not a joke that MetaJS compiler can guess your thoughts and generate
 missed parts of code. Let's look at example bellow where function `named-id`
 requires 2 parameters but it's called without any parameters. Notice that in the
 compiled Javascript code on the right function `namedId` called with both two
-required parameters obtained from local context. How is it done?  It's
-[magic](http://www.coect.net/metajs/).
+required parameters obtained from local context. How is it done? It's
+[magic](http://coect.dogada.org/metajs/).
 
 ```
 (defn named-id (id name opt:"")
@@ -131,7 +127,7 @@ function parameters, i.e. do what you said it to do. It will not try to find
 optional parameters in the execution context.
 
 In the above example local variable `opt` from `logos-demo` function isn't passed to
-`named-id` function, because `opt` argument declared as *optional* for
+`named-id` function, because `opt` argument declared as _optional_ for
 `named-id` function (and has default value &ndash; empty string). If you missed a required
 variable and MetaJS can't find it in the call context or there more than one
 possible solution, you should see a warning.
@@ -149,4 +145,4 @@ and [LOR](http://www.linux.org.ru/news/opensource/9546490).
 You can find more information about semantic code transformations, examples of
 symbolic and entitative MetaJS to JavaScipt transformations in the [metajs_semantic_code_transformations.pdf](/pdf/metajs_semantic_code_transformations.pdf).
 Please look also at the high-level MetaJS language overview
-[metajs_lisp.pdf](http://metajs.coect.net/pdf/metajs_lisp.pdf).
+[metajs_lisp.pdf](/pdf/metajs_lisp.pdf).

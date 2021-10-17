@@ -7,10 +7,10 @@ docpadConfig = {
 		# Specify some site properties
 		site:
 			# The production url of our website
-			url: "http://metajs.coect.net"
+			url: "http://metajs.dogada.org"
 
 			# The default title of our website
-			title: "metajs.coect.net"
+			title: "metajs.dogada.org"
 
 			# The website description (for SEO)
 			description: "Lisp compiled to Javascript"

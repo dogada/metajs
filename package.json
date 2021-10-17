@@ -1,6 +1,6 @@
 {
   "name": "metajs",
-  "homepage": "http://metajs.coect.net",
+  "homepage": "http://metajs.dogada.org",
   "version": "0.3.0",
   "keywords": [
     "logos",
@@ -15,7 +15,7 @@
   "license" : "MIT",
   "contributors": {
     "name": "Dmytro V. Dogadailo",
-    "web": "http://www.coect.net/"
+    "web": "http://coect.dogada.org/"
   },
   "repository": {
     "type": "git",
